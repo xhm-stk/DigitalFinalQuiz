@@ -3,564 +3,704 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Systems Exam Portal</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Digital Logic & Systems - Ultimate Master Cheat Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+        /* =======================================================
+           COMPACT PRINT SETTINGS WITH FULL DETAILED CONTENT
+           ======================================================= */
+        @page {
+            size: A4 landscape;
+            margin: 3mm;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #f8fafc;
+            font-size: 6.5px; /* ขนาดฟอนต์เล็กตามฉบับบีบอัด */
+            line-height: 1.1;
+            color: #111;
+            background: #fff;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
-        /* ซ่อน Scrollbar สำหรับแผงนำทางข้อสอบ */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
+        
+        .header-main {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 2px;
+            background-color: #f4f6f9;
+            color: #2c3e50;
         }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        
+        /* 5-COLUMN LAYOUT */
+        .container {
+            column-count: 5;
+            column-gap: 3mm;
+            width: 100%;
         }
+        .box {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            border: 0.5px solid #bdc3c7;
+            margin-bottom: 2px;
+            border-radius: 2px;
+            background: #fff;
+        }
+        .box h2 {
+            font-size: 7.5px;
+            background: #2980b9;
+            color: #fff;
+            padding: 2px 4px;
+            border-bottom: 1px solid #1a5276;
+            font-weight: bold;
+        }
+        .content {
+            padding: 2px 3px;
+        }
+        
+        p, li { margin-bottom: 1px; }
+        ul, ol { padding-left: 10px; margin-bottom: 1px; }
+        
+        .eq { 
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 7px; 
+            font-weight: bold; 
+            color: #c0392b; 
+            background: #fdf2e9;
+            padding: 0 1px;
+        }
+        .over { text-decoration: overline; } 
+        .symbol { font-weight: bold; color: #27ae60; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2px 0;
+            font-size: 6px;
+            text-align: center;
+        }
+        th, td {
+            border: 0.5px solid #7f8c8d;
+            padding: 1px;
+        }
+        th { background-color: #ecf0f1; font-weight: 700; }
+        
+        /* MINI SVG STYLES */
+        svg { display: block; margin: 1px auto; }
+        .gate-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 1px;
+            border-bottom: 0.5px dotted #ccc;
+            padding-bottom: 1px;
+        }
+        .gate-text { margin-left: 3px; flex: 1; font-size: 6.2px; }
+
+        .bg-gray { 
+            background-color: #f2f4f4; 
+            border: 0.5px dashed #95a5a6; 
+            padding: 2px; 
+            margin: 2px 0;
+        }
+        .vocab {
+            background-color: #e8f8f5;
+            border-left: 2px solid #1abc9c;
+            padding: 2px;
+            margin: 2px 0;
+        }
+        .alert {
+            background-color: #fdedec;
+            border-left: 2px solid #e74c3c;
+            padding: 2px;
+            margin: 2px 0;
+        }
+
+        .code-block {
+            background-color: #282c34;
+            color: #abb2bf;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 5.5px;
+            padding: 2px;
+            white-space: pre;
+            margin: 2px 0;
+            line-height: 1.1;
+        }
+        .code-keyword { color: #c678dd; font-weight: bold; }
+        .code-comment { color: #5c6370; font-style: italic; }
+        .code-number { color: #d19a66; }
+        
+        .step-box { border: 0.5px solid #ccc; padding: 2px; margin: 2px 0; background: #fafafa; }
+        .kmap-table th, .kmap-table td { height: 8px; width: 25%; }
+        .kmap-highlight { background-color: #fad7a1; font-weight: bold; }
     </style>
 </head>
-<body class="text-slate-800 antialiased">
+<body>
 
-    <div id="app"></div>
+    <div class="header-main">
+        Digital Logic & System Design - Ultimate Master Guide (Full Text + Mini Graphics)
+    </div>
 
-    <script>
-        // --- ข้อมูลฐานคำถาม (ดึงจากไฟล์ PDF และ Text ที่อัปโหลด) ---
-        const baseQuestions = [
-            { chapter: "ระบบตัวเลข", question: "สัญญาณดิจิทัลมีกี่สถานะ?", options: ["1 สถานะ", "2 สถานะ", "3 สถานะ", "ไม่จำกัด"], correctAnswer: 1, explanation: "สัญญาณดิจิทัลมี 2 สถานะ คือ 0 (Low) และ 1 (High)" },
-            { chapter: "รหัสไบนารี่ (Week 11)", question: "รหัส BCD-8421 ของเลข 7 คือข้อใด?", options: ["0110", "1000", "0111", "1001"], correctAnswer: 2, explanation: "เลข 7 ในระบบฐานสิบ แปลงเป็นเลขฐานสองแบบ BCD-8421 ใช้ 4 บิต คือ 0111" },
-            { chapter: "รหัสไบนารี่ (Week 11)", question: "เลขฐานสิบ 47 เมื่อแปลงเป็น BCD-8421 ได้ผลลัพธ์คือข้อใด?", options: ["0100 0111", "0100 1000", "101111", "0111 0100"], correctAnswer: 0, explanation: "4 แปลงเป็น 0100 และ 7 แปลงเป็น 0111 นำมาต่อกัน" },
-            { chapter: "รหัสไบนารี่ (Week 11)", question: "รหัส Excess-3 ของเลข 5 คือข้อใด?", options: ["0101", "1000", "0111", "1010"], correctAnswer: 1, explanation: "Excess-3 คือการนำเลขฐานสิบมาบวก 3 (5+3=8) แล้วแปลงเป็นฐานสอง 4 บิต (1000)" },
-            { chapter: "คณิตศาสตร์ลอจิก (Week 11)", question: "การแปลงเลขทศนิยมฐานสิบ 0.625 เป็นเลขฐานสอง มีค่าตรงกับข้อใด?", options: ["0.101", "0.110", "0.011", "0.111"], correctAnswer: 0, explanation: "0.625 × 2 = 1.250 (1), 0.250 × 2 = 0.500 (0), 0.500 × 2 = 1.000 (1) -> 0.101" },
-            { chapter: "ลอจิกเกต (Week 12)", question: "ตัวแปรลอจิก (Logic Variable) มีลักษณะตามข้อใด?", options: ["มีสถานะต่อเนื่อง", "อยู่พร้อมกันได้ 2 สถานะ", "มีได้เพียง 2 สถานะ และเป็นพร้อมกันไม่ได้", "มีค่าเป็น 1 เสมอ"], correctAnswer: 2, explanation: "เป็น Bi-State Variable (เปิด-ปิด, 0-1) เป็นพร้อมกันไม่ได้" },
-            { chapter: "วงจรคอมบิเนชั่นฯ (Week 13)", question: "ข้อใดกล่าวถูกต้องเกี่ยวกับวงจรคอมบิเนชั่น?", options: ["มีหน่วยความจำ", "ขึ้นอยู่กับอินพุตปัจจุบันและสภาวะก่อนหน้า", "ต้องมี Clock", "เอาต์พุตขึ้นอยู่กับอินพุตปัจจุบันเท่านั้น"], correctAnswer: 3, explanation: "วงจรคอมบิเนชั่นไม่มีการป้อนกลับและไม่มีหน่วยความจำ" },
-            { chapter: "วงจรคอมบิเนชั่นฯ (Week 13)", question: "การต่อ LED 7-segment แบบมัลติเพล็กซ์ มีลักษณะอย่างไร?", options: ["1 วงจรถอดรหัส ต่อ 1 หลัก", "ต่อขา a-g เข้าด้วยกัน ใช้ขา Common สลับการทำงาน", "ไม่ใช้ตัวต้านทาน", "ไฟติดพร้อมกันทั้งหมดเสมอ"], correctAnswer: 1, explanation: "แชร์พอร์ต a-g และใช้ขา Common กวาดสลับติดทีละหลักอย่างรวดเร็ว" },
-            { chapter: "วงจรฟลิปฟลอป (Week 16)", question: "ฟลิปฟลอป ทำหน้าที่หลักอะไร?", options: ["แปลงอนาล็อกเป็นดิจิทัล", "กรองความถี่", "หน่วยความจำ 1 บิต", "เพิ่มแรงดัน"], correctAnswer: 2, explanation: "เป็นอุปกรณ์ Bistable ใช้เก็บสถานะ 0 หรือ 1 เสมือนหน่วยความจำ 1 บิต" },
-            { chapter: "วงจรฟลิปฟลอป (Week 16)", question: "ใน JK Flip-Flop หาก J=1, K=1 เมื่อมี Clock เอาต์พุตจะเป็นอย่างไร?", options: ["เป็น 1 เสมอ", "เป็น 0 เสมอ", "คงค่าเดิม", "สลับสถานะจากเดิม (Toggle)"], correctAnswer: 3, explanation: "สภาวะ Toggle จะกลับสถานะจาก 0 เป็น 1 หรือ 1 เป็น 0" },
-            { chapter: "วงจรนับ (Week 16)", question: "วงจรนับ (Counter Circuit) ถูกต่อยอดจากอุปกรณ์ใด?", options: ["Encoder", "Multiplexer", "Decoder", "Flip-Flop"], correctAnswer: 3, explanation: "วงจรนับเป็น Sequential Circuit ที่ต้องใช้ Flip-Flop มาต่อร่วมกัน" },
-            { chapter: "วงจรเลื่อนข้อมูล (Week 17)", question: "วงจรเลื่อนข้อมูลแบบ PIPO คืออะไร?", options: ["เข้าทีละบิต ออกทีละบิต", "เข้าทีละบิต ออกพร้อมกัน", "เข้าพร้อมกัน ออกทีละบิต", "เข้าพร้อมกัน ออกพร้อมกัน"], correctAnswer: 3, explanation: "PIPO = Parallel In - Parallel Out" },
-            { chapter: "วงจร Sequential (Week 17)", question: "ความแตกต่างสำคัญที่ทำให้ วงจร Sequential ต่างจาก วงจร Combinational?", options: ["ทำงานแบบ Asynchronous", "เอาต์พุตขึ้นอยู่กับอินพุตปัจจุบันและเอาต์พุตเดิม", "ใช้แค่ Logic Gate พื้นฐาน", "เอาต์พุตเร็วกว่า"], correctAnswer: 1, explanation: "Sequential มีหน่วยความจำ (Feedback) บันทึกสภาวะก่อนหน้า" },
-            { chapter: "วงจรนับ (Week 16)", question: "วงจรนับแบบใดที่สัญญาณนาฬิกาเข้าที่ฟลิปฟลอปตัวแรกเท่านั้น?", options: ["Synchronous Counter", "Asynchronous (Ripple) Counter", "Ring Counter", "Johnson Counter"], correctAnswer: 1, explanation: "Ripple Counter จะส่งผ่านสัญญาณนาฬิกาต่อๆ กันไป (ไม่ได้เข้าทุกตัวพร้อมกัน)" },
-            { chapter: "รหัสต่าง ๆ (Week 11)", question: "ข้อใดเป็นคุณสมบัติเด่นของ Gray Code?", options: ["ใช้บิตน้อยที่สุด", "รหัสบิตถัดไปเปลี่ยนแปลงเพียงครั้งละ 1 บิต", "คำนวณทางคณิตศาสตร์ได้ง่าย", "เป็นรหัสที่มีการถ่วงน้ำหนัก"], correctAnswer: 1, explanation: "คุณสมบัติสำคัญของ Gray Code คือเมื่อค่าเปลี่ยน 1 สเตป บิตจะเปลี่ยนสถานะเพียงบิตเดียวเท่านั้น เพื่อลดข้อผิดพลาด" }
-        ];
+    <div class="container">
 
-        // --- สร้างชุดข้อสอบ 50 ข้อ ---
-        function generateExamSet(setName, prefixId) {
-            let exam = [];
-            // ใส่ข้อสอบจริงลงไปก่อน
-            const shuffledBase = [...baseQuestions].sort(() => Math.random() - 0.5);
-            
-            // วนลูปสร้างข้อสอบให้ครบ 50 ข้อต่อชุด
-            for (let i = 0; i < 50; i++) {
-                if (i < shuffledBase.length) {
-                    exam.push({ id: `${prefixId}-${i+1}`, ...shuffledBase[i] });
-                } else {
-                    // สร้างข้อสอบจำลองแบบสุ่มให้ครบจำนวน เพื่อการทดสอบระบบ 50 ข้อ
-                    const baseRef = shuffledBase[i % shuffledBase.length];
-                    exam.push({
-                        id: `${prefixId}-${i+1}`,
-                        chapter: baseRef.chapter,
-                        question: `[ข้อสอบเสมือน ${i+1}] ${baseRef.question}`,
-                        options: baseRef.options,
-                        correctAnswer: baseRef.correctAnswer,
-                        explanation: `(เนื้อหาอ้างอิง) ${baseRef.explanation}`
-                    });
-                }
-            }
-            return exam;
-        }
-
-        const examSets = {
-            'A': { title: 'ชุดที่ 1 (SET A)', data: generateExamSet('ชุดที่ 1 (SET A)', 'A') },
-            'B': { title: 'ชุดที่ 2 (SET B)', data: generateExamSet('ชุดที่ 2 (SET B)', 'B') },
-            'C': { title: 'ชุดที่ 3 (SET C)', data: generateExamSet('ชุดที่ 3 (SET C)', 'C') }
-        };
-
-        // --- State ของแอปพลิเคชัน ---
-        let state = {
-            stage: 'home', // 'home', 'quiz', 'results'
-            currentSetId: null,
-            currentIdx: 0,
-            answers: [], // เก็บคำตอบของ currentSet
-            history: JSON.parse(localStorage.getItem('digitalExamHistory')) || [],
-            viewingHistoryItem: null // สำหรับดูรายละเอียดประวัติ
-        };
-
-        // --- Core Functions ---
-        function saveHistory() {
-            localStorage.setItem('digitalExamHistory', JSON.stringify(state.history));
-        }
-
-        function render() {
-            const app = document.getElementById('app');
-            window.scrollTo(0, 0); // เลื่อนขึ้นบนสุดเมื่อเปลี่ยนหน้า
-            
-            if (state.stage === 'home') {
-                app.innerHTML = getHomeHTML();
-            } else if (state.stage === 'quiz') {
-                app.innerHTML = getQuizHTML();
-            } else if (state.stage === 'results') {
-                app.innerHTML = getResultsHTML();
-            }
-
-            lucide.createIcons();
-        }
-
-        // --- Controllers ---
-        window.startExam = (setId) => {
-            state.stage = 'quiz';
-            state.currentSetId = setId;
-            state.currentIdx = 0;
-            state.answers = Array(50).fill(null);
-            render();
-        };
-
-        window.jumpToQuestion = (idx) => {
-            state.currentIdx = idx;
-            render();
-        };
-
-        window.selectOption = (optionIndex) => {
-            state.answers[state.currentIdx] = optionIndex;
-            render();
-        };
-
-        window.nextQuestion = () => {
-            if (state.currentIdx < 49) {
-                state.currentIdx++;
-                render();
-            }
-        };
-
-        window.prevQuestion = () => {
-            if (state.currentIdx > 0) {
-                state.currentIdx--;
-                render();
-            }
-        };
-
-        window.submitExam = () => {
-            if(confirm("คุณต้องการส่งคำตอบและดูผลคะแนนใช่หรือไม่?")) {
-                const analysis = calculateAnalysis(state.answers, examSets[state.currentSetId].data);
+        <!-- ==========================================
+             SECTION 1: NUMBER SYSTEMS & MATH LOGIC
+             ========================================== -->
+        <div class="box">
+            <h2>1. คณิตศาสตร์ลอจิก & ระบบเลขฐาน (Number Systems)</h2>
+            <div class="content">
+                <div class="vocab">
+                    <strong>ทฤษฎีสัญญาณเบื้องต้น:</strong> 
+                    <br>- <b>Analog Signal:</b> สัญญาณต่อเนื่อง (Continuous Signal) มีขนาดไม่คงที่ สัญญาณรบกวน (Noise) แทรกแซงได้ง่าย
+                    <br>- <b>Digital Signal:</b> สัญญาณไม่ต่อเนื่อง (Discrete Signal) มี 2 สถานะคือ 0 (Low) และ 1 (High) ทนทานต่อ Noise
+                </div>
                 
-                // บันทึกประวัติ
-                const historyRecord = {
-                    id: Date.now(),
-                    setId: state.currentSetId,
-                    setName: examSets[state.currentSetId].title,
-                    date: new Date().toLocaleString('th-TH'),
-                    score: analysis.score,
-                    total: 50,
-                    answers: [...state.answers],
-                    analysisData: analysis
-                };
-                
-                state.history.unshift(historyRecord); // เพิ่มลงประวัติล่าสุด
-                saveHistory();
-
-                state.viewingHistoryItem = historyRecord;
-                state.stage = 'results';
-                render();
-            }
-        };
-
-        window.goHome = () => {
-            state.stage = 'home';
-            state.currentSetId = null;
-            state.viewingHistoryItem = null;
-            render();
-        };
-
-        window.viewHistoryDetail = (historyId) => {
-            const record = state.history.find(h => h.id === historyId);
-            if (record) {
-                state.viewingHistoryItem = record;
-                state.stage = 'results';
-                render();
-            }
-        };
-
-        window.clearHistory = () => {
-            if(confirm("คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการสอบทั้งหมด?")) {
-                state.history = [];
-                saveHistory();
-                render();
-            }
-        };
-
-        // --- วิเคราะห์ผล ---
-        function calculateAnalysis(userAnswers, questionsData) {
-            let score = 0;
-            const chapters = {};
-
-            userAnswers.forEach((ans, idx) => {
-                const q = questionsData[idx];
-                if (!chapters[q.chapter]) {
-                    chapters[q.chapter] = { total: 0, correct: 0 };
-                }
-                chapters[q.chapter].total += 1;
-                
-                if (ans === q.correctAnswer) {
-                    score += 1;
-                    chapters[q.chapter].correct += 1;
-                }
-            });
-
-            const needReview = [];
-            const good = [];
-
-            Object.entries(chapters).forEach(([chapter, stats]) => {
-                const percentage = stats.correct / stats.total;
-                if (percentage < 0.7) { // เกณฑ์ 70%
-                    needReview.push({ chapter, ...stats });
-                } else {
-                    good.push({ chapter, ...stats });
-                }
-            });
-
-            return { score, needReview, good };
-        }
-
-        // --- Views ---
-        function getHomeHTML() {
-            let historyHTML = '';
-            if (state.history.length === 0) {
-                historyHTML = `
-                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200 border-dashed">
-                        <i data-lucide="history" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-                        <p class="text-slate-500">ยังไม่มีประวัติการทำข้อสอบ</p>
-                    </div>`;
-            } else {
-                historyHTML = '<div class="space-y-4">';
-                state.history.forEach(h => {
-                    const passClass = h.score >= 25 ? 'text-green-600 bg-green-50 border-green-200' : 'text-red-600 bg-red-50 border-red-200';
-                    historyHTML += `
-                        <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                            <div>
-                                <h4 class="font-semibold text-slate-800">${h.setName}</h4>
-                                <div class="flex items-center text-sm text-slate-500 mt-1">
-                                    <i data-lucide="calendar" class="w-4 h-4 mr-1"></i> ${h.date}
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <div class="${passClass} px-4 py-2 rounded-lg border font-bold text-lg">
-                                    ${h.score} / 50
-                                </div>
-                                <button onclick="viewHistoryDetail(${h.id})" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="ดูรายละเอียด">
-                                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-                historyHTML += '</div>';
-            }
-
-            return `
-            <div class="min-h-screen pb-12">
-                <!-- Header -->
-                <div class="bg-indigo-700 text-white pt-16 pb-20 px-6 rounded-b-[3rem] shadow-lg">
-                    <div class="max-w-4xl mx-auto text-center">
-                        <i data-lucide="brain-circuit" class="w-16 h-16 mx-auto mb-4 text-indigo-200"></i>
-                        <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Digital Systems Exam Portal</h1>
-                        <p class="text-indigo-200 text-lg md:text-xl max-w-2xl mx-auto">ระบบจำลองการสอบแบบ 50 ข้อ พร้อมวิเคราะห์จุดแข็ง-จุดอ่อนรายบทเรียน เพื่อเตรียมความพร้อมก่อนลงสนามจริง</p>
-                    </div>
+                <p><b>1.1 การแปลงฐาน (Radix Conversion) แบบละเอียด:</b></p>
+                <div class="step-box">
+                    <p><b>แปลง ฐาน 10 เป็น ฐาน 2 (จำนวนเต็ม):</b> ใช้วิธีหารสั้นด้วย 2</p>
+                    <p>ตัวอย่าง: $25_{10} \rightarrow X_2$</p>
+                    <span class="eq">25 / 2 = 12 เศษ 1</span> (LSB)<br>
+                    <span class="eq">12 / 2 = 6 เศษ 0</span><br>
+                    <span class="eq">6 / 2 = 3 เศษ 0</span><br>
+                    <span class="eq">3 / 2 = 1 เศษ 1</span><br>
+                    <span class="eq">1 / 2 = 0 เศษ 1</span> (MSB)<br>
+                    &rarr; นำเศษมาเรียงจากล่างขึ้นบน: <b>11001<sub>2</sub></b>
                 </div>
 
-                <div class="max-w-4xl mx-auto px-4 -mt-10 space-y-12">
-                    
-                    <!-- เลือกชุดข้อสอบ -->
-                    <section>
-                        <div class="flex items-center mb-6">
-                            <i data-lucide="play-circle" class="w-6 h-6 text-indigo-600 mr-2"></i>
-                            <h2 class="text-2xl font-bold text-slate-800">เลือกชุดข้อสอบ</h2>
-                        </div>
-                        <div class="grid md:grid-cols-3 gap-6">
-                            ${Object.keys(examSets).map(key => `
-                                <div class="bg-white rounded-2xl p-6 shadow-lg shadow-slate-200/50 border border-slate-100 hover:border-indigo-300 hover:shadow-indigo-100 transition-all group">
-                                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-xl mb-4 group-hover:scale-110 transition-transform">
-                                        ${key}
-                                    </div>
-                                    <h3 class="text-xl font-bold text-slate-800 mb-2">${examSets[key].title}</h3>
-                                    <p class="text-slate-500 mb-6 flex items-center"><i data-lucide="file-text" class="w-4 h-4 mr-2"></i> จำนวน 50 ข้อ</p>
-                                    <button onclick="startExam('${key}')" class="w-full py-3 bg-indigo-50 text-indigo-700 font-semibold rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                                        เริ่มทำข้อสอบ
-                                    </button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </section>
+                <div class="step-box">
+                    <p><b>แปลง ฐาน 10 เป็น ฐาน 2 (ทศนิยม):</b> ใช้วิธีคูณด้วย 2</p>
+                    <p>ตัวอย่าง: $0.625_{10} \rightarrow X_2$</p>
+                    <span class="eq">0.625 &times; 2 = <b>1</b>.250</span> (บิตแรกสุด หน้าจุด)<br>
+                    <span class="eq">0.250 &times; 2 = <b>0</b>.500</span><br>
+                    <span class="eq">0.500 &times; 2 = <b>1</b>.000</span> (จบเมื่อหลังจุดเป็น 0)<br>
+                    &rarr; นำเลขหน้าจุดมาเรียงจากบนลงล่าง: <b>0.101<sub>2</sub></b>
+                </div>
 
-                    <!-- ประวัติการสอบ -->
-                    <section>
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="flex items-center">
-                                <i data-lucide="history" class="w-6 h-6 text-indigo-600 mr-2"></i>
-                                <h2 class="text-2xl font-bold text-slate-800">ประวัติการสอบของคุณ</h2>
-                            </div>
-                            ${state.history.length > 0 ? `
-                                <button onclick="clearHistory()" class="text-sm text-red-500 hover:text-red-700 flex items-center">
-                                    <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i> ล้างประวัติ
-                                </button>
-                            ` : ''}
-                        </div>
-                        ${historyHTML}
-                    </section>
+                <p><b>1.2 ระบบเลขมีเครื่องหมาย (Signed Numbers):</b></p>
+                <ul>
+                    <li><b>Sign Magnitude:</b> บิตซ้ายสุด (MSB) คือเครื่องหมาย <span class="symbol">0=บวก, 1=ลบ</span> (ข้อเสีย: มีค่า 0 สองค่าคือ 0000=+0 และ 1000=-0)</li>
+                    <li><b>1's Complement:</b> กลับบิต 0&harr;1 ทุกตำแหน่ง</li>
+                    <li><b>2's Complement:</b> ทำ 1's Comp แล้วบวก 1 ที่ LSB (ระบบที่ CPU ทั่วโลกใช้)</li>
+                </ul>
 
+                <div class="alert">
+                    <strong>การลบเลขด้วย 2's Complement:</strong> <br>
+                    แทนที่จะสร้างวงจรลบ (Subtractor) คอมพิวเตอร์จะใช้วงจรบวก (Adder) โดยใช้หลักการ <span class="eq">A - B = A + (-B)</span><br>
+                    <b>ตัวอย่าง: 7 - 5 (ในระบบ 4 บิต)</b><br>
+                    1. A = 7 = <span class="eq">0111</span><br>
+                    2. B = 5 = <span class="eq">0101</span> &rarr; แปลงเป็น 2's Comp จะได้ <span class="eq">1010 + 1 = 1011</span> (-5)<br>
+                    3. นำมาบวกกัน: <span class="eq">0111 + 1011 = <b>1</b>0010</span><br>
+                    4. ตัดตัวทด (Carry) บิตที่ 5 ทิ้ง &rarr; ผลลัพธ์ <span class="eq">0010</span> = 2 (ถูกต้อง!)
+                </div>
+
+                <p><b>1.3 มาตรฐาน IEEE 754 (ทศนิยม 32 บิต):</b></p>
+                <div class="bg-gray">
+                    โครงสร้าง: <b>[1-bit Sign] | [8-bit Exponent (Bias 127)] | [23-bit Fraction (Mantissa)]</b><br>
+                    สูตร: <span class="eq">Value = (-1)<sup>S</sup> &times; 1.F &times; 2<sup>E-127</sup></span><br>
+                    <b>ตัวอย่างแปลง 9.75 เป็น IEEE 754:</b><br>
+                    1. แปลงเป็นฐาน 2: $9 = 1001_2$, $0.75 = 0.11_2$ &rarr; รวม $1001.11_2$<br>
+                    2. เลื่อนจุด (Normalize): $1.00111_2 \times 2^3$<br>
+                    3. <b>S (Sign)</b> = 0 (เพราะเป็นค่าบวก)<br>
+                    4. <b>E (Exponent)</b> = $3 + 127 = 130_{10} = 10000010_2$<br>
+                    5. <b>F (Fraction)</b> = เอาเฉพาะหลังจุด = 00111 (เติม 0 ให้ครบ 23 บิต)<br>
+                    <b>ผลลัพธ์:</b> <span class="eq">0 10000010 00111000000000000000000</span>
                 </div>
             </div>
-            `;
-        }
+        </div>
 
-        function getQuizHTML() {
-            const currentData = examSets[state.currentSetId];
-            const q = currentData.data[state.currentIdx];
-            const answeredCount = state.answers.filter(a => a !== null).length;
-            const progressPercent = (answeredCount / 50) * 100;
-
-            // สร้างตัวเลือก
-            let optionsHTML = '';
-            q.options.forEach((opt, i) => {
-                const isSelected = state.answers[state.currentIdx] === i;
-                const btnClass = isSelected 
-                    ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-sm ring-1 ring-indigo-600' 
-                    : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50 text-slate-700';
-                const circleClass = isSelected ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300 bg-white';
+        <!-- ==========================================
+             SECTION 2: BINARY CODES & ERROR CORRECTION
+             ========================================== -->
+        <div class="box">
+            <h2>2. รหัสไบนารี่ & การแก้ไขข้อผิดพลาด (Binary Codes)</h2>
+            <div class="content">
+                <div class="vocab">
+                    <strong>การจัดกลุ่มรหัส:</strong>
+                    <br>- <b>Weighted Code:</b> รหัสถ่วงน้ำหนัก แต่ละบิตมีค่าประจำหลัก (เช่น BCD 8421)
+                    <br>- <b>Unweighted Code:</b> รหัสไม่ถ่วงน้ำหนัก นำมาคำนวณทางคณิตศาสตร์ไม่ได้ (เช่น Excess-3, Gray Code)
+                </div>
                 
-                optionsHTML += `
-                    <button onclick="selectOption(${i})" class="w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center ${btnClass}">
-                        <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 shrink-0 transition-colors ${circleClass}">
-                            ${isSelected ? '<div class="w-2 h-2 rounded-full bg-white"></div>' : ''}
-                        </div>
-                        <span class="text-md leading-relaxed">${opt}</span>
-                    </button>
-                `;
-            });
-
-            // สร้างแผงนำทาง 50 ข้อ
-            let navigatorHTML = '';
-            for (let i = 0; i < 50; i++) {
-                const isDone = state.answers[i] !== null;
-                const isCurrent = state.currentIdx === i;
-                let btnStyle = 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50';
-                if (isCurrent) btnStyle = 'ring-2 ring-indigo-600 bg-indigo-50 border-indigo-200 text-indigo-800 font-bold';
-                else if (isDone) btnStyle = 'bg-indigo-600 border-indigo-600 text-white shadow-sm';
-
-                navigatorHTML += `
-                    <button onclick="jumpToQuestion(${i})" class="w-10 h-10 flex items-center justify-center rounded-lg border text-sm transition-all ${btnStyle}">
-                        ${i + 1}
-                    </button>
-                `;
-            }
-
-            return `
-            <div class="min-h-screen flex flex-col md:flex-row">
-                
-                <!-- Main Quiz Area -->
-                <div class="flex-grow flex flex-col py-6 px-4 md:px-8 max-w-4xl w-full mx-auto">
-                    <!-- Header -->
-                    <div class="mb-6 flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <div>
-                            <span class="text-sm font-bold text-indigo-600 tracking-wider bg-indigo-50 px-3 py-1 rounded-full">${currentData.title}</span>
-                            <h2 class="text-xs text-slate-500 mt-2 ml-1">หมวดหมู่: ${q.chapter}</h2>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-sm font-semibold text-slate-700">ทำแล้ว ${answeredCount}/50 ข้อ</span>
-                            <div class="bg-slate-100 rounded-full h-2 w-32 mt-2 overflow-hidden">
-                                <div class="bg-indigo-500 h-2 rounded-full transition-all duration-300" style="width: ${progressPercent}%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Question Card -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10 flex-grow flex flex-col">
-                        <div class="flex items-start mb-8">
-                            <span class="text-4xl font-black text-indigo-200 mr-4 mt-1 leading-none">${state.currentIdx + 1}.</span>
-                            <h3 class="text-xl md:text-2xl font-medium leading-relaxed text-slate-800">${q.question}</h3>
-                        </div>
-                        <div class="space-y-3 mt-auto">
-                            ${optionsHTML}
-                        </div>
-                    </div>
-
-                    <!-- Controls -->
-                    <div class="mt-6 flex justify-between items-center">
-                        <button onclick="prevQuestion()" class="px-6 py-3 rounded-xl font-medium flex items-center transition-colors ${state.currentIdx === 0 ? 'invisible' : 'bg-white text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50'}">
-                            <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> ก่อนหน้า
-                        </button>
-                        
-                        ${state.currentIdx === 49 ? `
-                            <button onclick="submitExam()" class="px-8 py-3 bg-green-600 text-white rounded-xl font-bold shadow-lg hover:bg-green-700 hover:shadow-green-500/30 transition-all flex items-center">
-                                <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i> ส่งคำตอบทั้งหมด
-                            </button>
-                        ` : `
-                            <button onclick="nextQuestion()" class="px-6 py-3 rounded-xl font-medium flex items-center transition-colors bg-indigo-600 text-white shadow-md hover:bg-indigo-700">
-                                ถัดไป <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
-                            </button>
-                        `}
-                    </div>
+                <p><b>2.1 BCD (Binary Coded Decimal 8421):</b></p>
+                <p>ใช้ 4 บิตแทนเลขฐานสิบ 1 หลัก (0-9) โดยรหัส 1010 (A) ถึง 1111 (F) ถือเป็นสภาวะที่ไม่ใช้งาน (Don't Care)</p>
+                <div class="alert">
+                    <strong>กฎเหล็กการบวก BCD:</strong> <br>
+                    เนื่องจาก BCD นับแค่ 0-9 ถ้าผลบวก 4 บิตใดๆ เกิน 9 (1001) หรือมีตัวทด (Carry) ล้นออกไปหลักถัดไป <b>ต้องบวกปรับแก้ด้วย 0110 (เลข 6) เสมอ</b><br>
+                    <i>ตัวอย่าง: 8 + 5 = 13</i><br>
+                    <span class="eq">1000 (8) + 0101 (5) = 1101 (13)</span> ซึ่งเกิน 9!<br>
+                    บวกปรับแก้: <span class="eq">1101 + 0110 = 1 0011</span> &rarr; แยกเป็น <span class="eq">0001 0011</span> = 13 ในรหัส BCD
                 </div>
 
-                <!-- Right Sidebar (Navigator) -->
-                <div class="w-full md:w-80 bg-white border-l border-slate-200 p-6 shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.02)] hidden md:block overflow-y-auto">
-                    <div class="sticky top-0 bg-white pb-4 z-10 border-b border-slate-100 mb-4 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">แผงนำทางข้อสอบ</h3>
-                        <button onclick="goHome()" class="text-sm text-slate-400 hover:text-red-500 transition-colors">ออกจากการสอบ</button>
-                    </div>
-                    <div class="grid grid-cols-5 gap-2">
-                        ${navigatorHTML}
-                    </div>
-                    <div class="mt-8 pt-4 border-t border-slate-100">
-                        <div class="flex items-center text-xs text-slate-500 mb-2">
-                            <div class="w-3 h-3 bg-white border border-slate-300 rounded mr-2"></div> ยังไม่ได้ทำ
-                        </div>
-                        <div class="flex items-center text-xs text-slate-500 mb-2">
-                            <div class="w-3 h-3 bg-indigo-600 rounded mr-2"></div> ทำแล้ว
-                        </div>
-                        <div class="flex items-center text-xs text-slate-500">
-                            <div class="w-3 h-3 bg-indigo-50 border-2 border-indigo-600 rounded mr-2"></div> ข้อปัจจุบัน
-                        </div>
-                    </div>
-                </div>
+                <p><b>2.2 รหัสอื่นๆ:</b></p>
+                <ul>
+                    <li><b>Excess-3:</b> รหัสเพิ่ม 3 นำ BCD มาบวก <span class="eq">0011</span> มีคุณสมบัติ Self-complementing</li>
+                    <li><b>ASCII Code:</b> มาตรฐานตัวอักษร 7 บิต (A=41H/65, a=61H/97, 0=30H/48, Space=20H)</li>
+                    <li><b>Gray Code:</b> รหัสป้องกันความผิดพลาด ข้อมูลที่อยู่ติดกันจะเปลี่ยนค่าแค่ 1 บิตเสมอ (ลด Glitch ในเซนเซอร์หมุน/Encoder)</li>
+                </ul>
 
-                <!-- Mobile Navigator Bottom Sheet (Simplified) -->
-                <div class="md:hidden bg-white border-t border-slate-200 p-4 sticky bottom-0">
-                    <div class="flex overflow-x-auto gap-2 no-scrollbar pb-2">
-                        ${navigatorHTML}
-                    </div>
-                </div>
+                <p><b>2.3 Error Detection & Correction (ตรวจสอบและแก้ไขข้อมูล):</b></p>
+                <ul>
+                    <li><b>Parity Bit:</b> เช็คได้แค่ว่าผิดหรือไม่ แต่แก้ไม่ได้ (Even Parity = บิต 1 รวมเป็นเลขคู่, Odd Parity = บิต 1 รวมเป็นเลขคี่)</li>
+                    <li><b>Hamming Code:</b> ตรวจจับและ <u>แก้ไขได้ 1 บิต</u> (Single Error Correction)</li>
+                </ul>
 
-            </div>
-            `;
-        }
-
-        function getResultsHTML() {
-            const record = state.viewingHistoryItem;
-            const questionsData = examSets[record.setId].data;
-            const analysis = record.analysisData;
-            
-            const isPass = analysis.score >= 25; // ผ่านที่ 50%
-            const message = isPass ? '🎉 ยินดีด้วย! คุณผ่านเกณฑ์การทดสอบ' : '📚 ต้องพยายามอีกนิด กลับไปทบทวนเนื้อหานะครับ';
-            const colorTheme = isPass ? 'indigo' : 'red';
-
-            // เรนเดอร์คำแนะนำ
-            let needReviewHTML = analysis.needReview.length > 0 
-                ? '<ul class="space-y-3">' + analysis.needReview.map(item => `
-                    <li class="text-sm bg-white p-3 rounded-lg border border-red-100 text-red-900 shadow-sm flex justify-between items-center">
-                        <span>${item.chapter}</span>
-                        <span class="font-mono text-xs bg-red-100 px-2 py-1 rounded">ถูก ${item.correct}/${item.total}</span>
-                    </li>`).join('') + '</ul>'
-                : '<p class="text-sm text-green-600 italic">ยอดเยี่ยม! คุณผ่านเกณฑ์ทุกหัวข้อ</p>';
-
-            let goodHTML = analysis.good.length > 0
-                ? '<ul class="space-y-3">' + analysis.good.map(item => `
-                    <li class="text-sm bg-white p-3 rounded-lg border border-green-100 text-green-900 shadow-sm flex justify-between items-center">
-                        <span>${item.chapter}</span>
-                        <span class="font-mono text-xs bg-green-100 px-2 py-1 rounded">ถูก ${item.correct}/${item.total}</span>
-                    </li>`).join('') + '</ul>'
-                : '<p class="text-sm text-slate-500 italic">-</p>';
-
-            // เรนเดอร์เฉลยทั้ง 50 ข้อ
-            let detailsHTML = '';
-            questionsData.forEach((q, idx) => {
-                const userAns = record.answers[idx];
-                const isCorrect = userAns === q.correctAnswer;
-                const isSkipped = userAns === null;
-                
-                const borderClass = isCorrect ? 'border-green-200 bg-green-50/30' : (isSkipped ? 'border-amber-200 bg-amber-50/30' : 'border-red-200 bg-red-50/30');
-                const iconHTML = isCorrect 
-                    ? '<i data-lucide="check-circle-2" class="w-6 h-6 text-green-500 shrink-0"></i>' 
-                    : (isSkipped ? '<i data-lucide="minus-circle" class="w-6 h-6 text-amber-500 shrink-0"></i>' : '<i data-lucide="x-circle" class="w-6 h-6 text-red-500 shrink-0"></i>');
-
-                let userAnswerText = isSkipped ? '<span class="text-amber-600 font-medium">ไม่ได้ตอบ</span>' 
-                                               : `<span class="${isCorrect ? 'text-green-600' : 'text-red-600'} line-through">${q.options[userAns]}</span>`;
-
-                detailsHTML += `
-                    <div class="p-5 rounded-xl border ${borderClass}">
-                        <div class="flex items-start gap-3">
-                            ${iconHTML}
-                            <div class="flex-grow">
-                                <h4 class="font-medium text-slate-800 leading-snug">ข้อ ${idx + 1}. ${q.question}</h4>
-                                <div class="mt-3 space-y-1.5 text-sm">
-                                    ${!isCorrect ? `<p class="text-slate-600">คำตอบของคุณ: ${userAnswerText}</p>` : ''}
-                                    <p class="text-green-700 font-medium">เฉลย: ${q.options[q.correctAnswer]}</p>
-                                    <div class="mt-3 p-3 bg-white/60 rounded-lg border border-slate-200/60 text-slate-600 text-sm">
-                                        <i data-lucide="info" class="w-4 h-4 inline-block mr-1 -mt-0.5 opacity-50"></i>
-                                        ${q.explanation}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            return `
-            <div class="min-h-screen py-10 px-4 bg-slate-50">
-                <div class="max-w-4xl mx-auto space-y-6">
-                    
-                    <!-- Top nav -->
-                    <button onclick="goHome()" class="flex items-center text-slate-500 hover:text-indigo-600 transition-colors mb-6 font-medium">
-                        <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> กลับหน้าหลัก
-                    </button>
-
-                    <!-- Score Header -->
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 text-center relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-full h-2 bg-${colorTheme}-500"></div>
-                        <h2 class="text-3xl font-bold mb-1 text-slate-800">ผลการทดสอบ</h2>
-                        <p class="text-slate-500 mb-6">${record.setName} • ส่งเมื่อ ${record.date}</p>
-                        
-                        <div class="inline-flex flex-col items-center justify-center w-40 h-40 rounded-full border-8 border-${colorTheme}-100 mb-6 relative">
-                            <span class="text-5xl font-black text-${colorTheme}-600">${analysis.score}</span>
-                            <span class="text-lg text-slate-400 font-medium border-t border-slate-200 w-16 pt-1 mt-1">50</span>
-                        </div>
-                        <p class="text-xl font-bold text-slate-700">${message}</p>
-                    </div>
-
-                    <!-- Analysis Cards -->
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="bg-red-50 rounded-2xl p-6 border border-red-100">
-                            <div class="flex items-center mb-4 pb-4 border-b border-red-200/50">
-                                <i data-lucide="target" class="w-6 h-6 text-red-600 mr-2"></i>
-                                <h3 class="text-lg font-bold text-red-800">จุดที่ต้องเน้นทบทวน</h3>
-                            </div>
-                            ${needReviewHTML}
-                        </div>
-
-                        <div class="bg-green-50 rounded-2xl p-6 border border-green-100">
-                            <div class="flex items-center mb-4 pb-4 border-b border-green-200/50">
-                                <i data-lucide="award" class="w-6 h-6 text-green-600 mr-2"></i>
-                                <h3 class="text-lg font-bold text-green-800">จุดที่ทำได้ดีเยี่ยม</h3>
-                            </div>
-                            ${goodHTML}
-                        </div>
-                    </div>
-
-                    <!-- All Details -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8 mt-8">
-                        <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-                            <h3 class="text-xl font-bold text-slate-800 flex items-center">
-                                <i data-lucide="file-check-2" class="w-6 h-6 text-indigo-600 mr-2"></i>
-                                เฉลยละเอียดทั้งหมด 50 ข้อ
-                            </h3>
-                        </div>
-                        <div class="space-y-4">
-                            ${detailsHTML}
-                        </div>
-                    </div>
-
+                <div class="step-box">
+                    <b>วิธีสร้างรหัส Hamming Code (7,4): ข้อมูล 4 บิต (D), แทรก Parity 3 บิต (P)</b><br>
+                    โครงสร้าง: <span class="eq">P<sub>1</sub> P<sub>2</sub> D<sub>3</sub> P<sub>4</sub> D<sub>5</sub> D<sub>6</sub> D<sub>7</sub></span> (แทรก P ที่ตำแหน่ง $2^n$)<br>
+                    สมมติส่งข้อมูล D = <b>1011</b> (เรียงลงตำแหน่ง D3=1, D5=0, D6=1, D7=1)<br>
+                    <b>การหาค่า P (สมมติใช้ Even Parity - XOR กันต้องได้ 0):</b><br>
+                    - <span class="eq">P<sub>1</sub></span> เช็คตำแหน่ง 1,3,5,7 &rarr; $P_1 \oplus 1 \oplus 0 \oplus 1 = 0 \rightarrow P_1 = 0$<br>
+                    - <span class="eq">P<sub>2</sub></span> เช็คตำแหน่ง 2,3,6,7 &rarr; $P_2 \oplus 1 \oplus 1 \oplus 1 = 0 \rightarrow P_2 = 1$<br>
+                    - <span class="eq">P<sub>4</sub></span> เช็คตำแหน่ง 4,5,6,7 &rarr; $P_4 \oplus 0 \oplus 1 \oplus 1 = 0 \rightarrow P_4 = 0$<br>
+                    <b>รหัสที่ส่งออกไปคือ:</b> <span class="eq">0 1 1 0 0 1 1</span><br>
+                    <i>*หากฝั่งรับคำนวณ Parity ใหม่แล้วผิด สมมติ P1 และ P4 ผิด แสดงว่าบิตที่ 1+4 = 5 ผิด ให้กลับบิตที่ 5 ก็จะแก้ไขข้อมูลได้ทันที!</i>
                 </div>
             </div>
-            `;
-        }
+        </div>
 
-        // --- Start App ---
-        render();
+        <!-- ==========================================
+             SECTION 3: LOGIC GATES & BOOLEAN ALGEBRA
+             ========================================== -->
+        <div class="box">
+            <h2>3. ลอจิกเกต & พีชคณิตบูลลีน (Mini-Gates)</h2>
+            <div class="content">
+                
+                <!-- AND Gate -->
+                <div class="gate-container">
+                    <svg width="20" height="10" viewBox="0 0 50 25"><path d="M 0,7 L 10,7 M 0,18 L 10,18 M 10,2 L 25,2 A 10.5,10.5 0 0,1 25,23 L 10,23 Z M 35.5,12.5 L 45,12.5" fill="none" stroke="#000" stroke-width="2"/></svg>
+                    <div class="gate-text">
+                        <b>AND:</b> <span class="eq">Y = A &middot; B</span><br>
+                        (อนุกรม) ออก 1 เมื่อ In=1 ทุกตัว
+                    </div>
+                </div>
 
-    </script>
+                <!-- OR Gate -->
+                <div class="gate-container">
+                    <svg width="20" height="10" viewBox="0 0 50 25"><path d="M 0,7 L 12,7 M 0,18 L 12,18 M 10,2 Q 15,12.5 10,23 Q 25,23 35,12.5 Q 25,2 10,2 M 35,12.5 L 45,12.5" fill="none" stroke="#000" stroke-width="2"/></svg>
+                    <div class="gate-text">
+                        <b>OR:</b> <span class="eq">Y = A + B</span><br>
+                        (ขนาน) ออก 1 เมื่อมี In=1 แม้แต่ตัวเดียว
+                    </div>
+                </div>
+
+                <!-- NOT Gate -->
+                <div class="gate-container">
+                    <svg width="20" height="10" viewBox="0 0 50 25"><path d="M 0,12.5 L 15,12.5 M 15,4 L 30,12.5 L 15,21 Z M 36,12.5 L 45,12.5" fill="none" stroke="#000" stroke-width="2"/><circle cx="33" cy="12.5" r="3" fill="none" stroke="#000" stroke-width="2"/></svg>
+                    <div class="gate-text">
+                        <b>NOT:</b> <span class="eq">Y = A'</span> หรือ <span class="eq"><span class="over">A</span></span><br>
+                        Inverter ส่วนกลับ 0 เป็น 1
+                    </div>
+                </div>
+
+                <!-- NAND Gate -->
+                <div class="gate-container">
+                    <svg width="20" height="10" viewBox="0 0 50 25"><path d="M 0,7 L 10,7 M 0,18 L 10,18 M 10,2 L 25,2 A 10.5,10.5 0 0,1 25,23 L 10,23 Z M 41.5,12.5 L 48,12.5" fill="none" stroke="#000" stroke-width="2"/><circle cx="38.5" cy="12.5" r="3" fill="none" stroke="#000" stroke-width="2"/></svg>
+                    <div class="gate-text">
+                        <b>NAND:</b> <span class="eq">Y = <span class="over">A &middot; B</span></span><br>
+                        *Universal Gate (สร้างเกตอื่นได้หมด)
+                    </div>
+                </div>
+
+                <!-- NOR Gate -->
+                <div class="gate-container">
+                    <svg width="20" height="10" viewBox="0 0 50 25"><path d="M 0,7 L 12,7 M 0,18 L 12,18 M 10,2 Q 15,12.5 10,23 Q 25,23 35,12.5 Q 25,2 10,2 M 41,12.5 L 48,12.5" fill="none" stroke="#000" stroke-width="2"/><circle cx="38" cy="12.5" r="3" fill="none" stroke="#000" stroke-width="2"/></svg>
+                    <div class="gate-text">
+                        <b>NOR:</b> <span class="eq">Y = <span class="over">A + B</span></span><br>
+                        *Universal Gate (สร้างเกตอื่นได้หมด)
+                    </div>
+                </div>
+
+                <!-- XOR Gate -->
+                <div class="gate-container">
+                    <svg width="20" height="10" viewBox="0 0 50 25"><path d="M 0,7 L 7,7 M 0,18 L 7,18 M 6,2 Q 11,12.5 6,23 M 10,2 Q 15,12.5 10,23 Q 25,23 35,12.5 Q 25,2 10,2 M 35,12.5 L 45,12.5" fill="none" stroke="#000" stroke-width="2"/></svg>
+                    <div class="gate-text">
+                        <b>XOR:</b> <span class="eq">Y = A &oplus; B = A<span class="over">B</span>+<span class="over">A</span>B</span><br>
+                        ออก 1 เมื่อ In <u>ต่างกัน</u> (Odd Parity)
+                    </div>
+                </div>
+
+                <!-- XNOR Gate -->
+                <div class="gate-container" style="border-bottom:none;">
+                    <svg width="20" height="10" viewBox="0 0 50 25"><path d="M 0,7 L 7,7 M 0,18 L 7,18 M 6,2 Q 11,12.5 6,23 M 10,2 Q 15,12.5 10,23 Q 25,23 35,12.5 Q 25,2 10,2 M 41,12.5 L 48,12.5" fill="none" stroke="#000" stroke-width="2"/><circle cx="38" cy="12.5" r="3" fill="none" stroke="#000" stroke-width="2"/></svg>
+                    <div class="gate-text">
+                        <b>XNOR:</b> <span class="eq">Y = A &odot; B = AB+<span class="over">A</span><span class="over">B</span></span><br>
+                        ออก 1 เมื่อ In <u>เหมือนกัน</u> (Even Parity)
+                    </div>
+                </div>
+
+                <p><b>ทฤษฎีพีชคณิตบูลลีนที่ควรจำ:</b></p>
+                <div style="column-count: 2; column-gap: 2mm;">
+                    <span class="eq">A + 0 = A</span><br>
+                    <span class="eq">A + 1 = 1</span><br>
+                    <span class="eq">A &middot; 0 = 0</span><br>
+                    <span class="eq">A &middot; 1 = A</span><br>
+                    <span class="eq">A + A = A</span><br>
+                    <span class="eq">A &middot; A = A</span><br>
+                    <span class="eq">A + <span class="over">A</span> = 1</span><br>
+                    <span class="eq">A &middot; <span class="over">A</span> = 0</span><br>
+                    <span class="eq">A + AB = A</span> (ดึงตัวร่วม)<br>
+                    <span class="eq">A + <span class="over">A</span>B = A+B</span>
+                </div>
+
+                <div class="alert">
+                    <strong>De Morgan's Theorem (ทฤษฎีเดอมอร์แกน):</strong><br>
+                    สูตรจำ: <i>"หั่นบาร์ยาว เปลี่ยนเครื่องหมาย (+ เป็น &middot; / &middot; เป็น +)"</i><br>
+                    <span class="eq"><span class="over">A + B</span> = <span class="over">A</span> &middot; <span class="over">B</span></span> (NOR เปลี่ยนรูปเป็น Bubble-AND ได้)<br>
+                    <span class="eq"><span class="over">A &middot; B</span> = <span class="over">A</span> + <span class="over">B</span></span> (NAND เปลี่ยนรูปเป็น Bubble-OR ได้)
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SECTION 4: K-MAP & MINIMIZATION
+             ========================================== -->
+        <div class="box">
+            <h2>4. สวิตชิ่งฟังก์ชัน & K-Map (Minimization)</h2>
+            <div class="content">
+                <p><b>ฟังก์ชันมาตรฐาน (Standard Forms):</b></p>
+                <ul>
+                    <li><b>SOP (Sum of Product / Minterm):</b> <span class="eq">Y = &Sigma;m</span> <br>ดูจากบรรทัดที่ Y=1 (ตัวแปรปกติ=1, บาร์=0) เช่น <span class="eq">A<span class="over">B</span>C</span></li>
+                    <li><b>POS (Product of Sum / Maxterm):</b> <span class="eq">Y = &Pi;M</span> <br>ดูจากบรรทัดที่ Y=0 (ตัวแปรปกติ=0, บาร์=1) เช่น <span class="eq">(<span class="over">A</span>+B+<span class="over">C</span>)</span></li>
+                </ul>
+
+                <p><b>Karnaugh Map (K-Map):</b> เครื่องมือลดรูปสมการด้วยกราฟิก</p>
+                <div style="display:flex; justify-content:center; align-items:center; margin:2px 0;">
+                    <table class="kmap-table" style="width: 70%; margin:0;">
+                        <tr><th>AB \ CD</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+                        <tr><th>00</th><td>m0</td><td class="kmap-highlight">m1</td><td class="kmap-highlight">m3</td><td>m2</td></tr>
+                        <tr><th>01</th><td>m4</td><td class="kmap-highlight">m5</td><td class="kmap-highlight">m7</td><td>m6</td></tr>
+                        <tr><th>11</th><td>m12</td><td>m13</td><td>m15</td><td>m14</td></tr>
+                        <tr><th>10</th><td>m8</td><td>m9</td><td>m11</td><td>m10</td></tr>
+                    </table>
+                </div>
+                <p><b>กฎการวง K-Map:</b></p>
+                <ol>
+                    <li>การเรียงช่องต้องเป็นแบบ <b>Gray Code</b> (เปลี่ยนทีละ 1 บิต: 00, 01, 11, 10) เพื่อให้ช่องที่ติดกันในตารางมีตัวแปรต่างกันแค่ตัวเดียว</li>
+                    <li>ต้องวงให้ครอบคลุมเลข 1 ให้หมด โดยขนาดวงต้องเป็น <span class="eq">2<sup>n</sup></span> (1, 2, 4, 8, 16 ช่อง)</li>
+                    <li>วงยิ่งใหญ่ สมการที่ได้จะยิ่งสั้น (ตัวแปรที่ค่าเปลี่ยน 0&harr;1 ในวงนั้นจะถูกตัดทิ้ง)
+                        <br><i>*จากรูปด้านบน วง 4 ช่องสีส้ม ตัวแปร A(0) และ D(1) คงที่, B และ C เปลี่ยนค่า &rarr; ได้คำตอบ <span class="eq">Y = <span class="over">A</span>D</span></i>
+                    </li>
+                    <li>สามารถวงพับขอบ (Wrap-around) ซ้าย-ขวา หรือ บน-ล่าง ทะลุกันได้</li>
+                    <li><b>Don't Care (X):</b> ให้มองเป็น 1 หากนำมารวมแล้วทำให้วงใหญ่ขึ้น ถ้านอกวงให้มองเป็น 0 ไม่ต้องไปสนใจ</li>
+                </ol>
+
+                <div class="vocab">
+                    <strong>คำศัพท์สำคัญใน K-Map:</strong>
+                    <br>- <b>Implicant:</b> กลุ่มย่อยของ 1 ใดๆ ในตาราง
+                    <br>- <b>Prime Implicant (PI):</b> วงขนาดใหญ่ที่สุดที่เป็นไปได้
+                    <br>- <b>Essential PI (EPI):</b> วง PI ที่มีเลข 1 อย่างน้อยตัวหนึ่งซึ่ง <u>ไม่ถูกวงอื่นทับ</u> (สมการคำตอบสุดท้ายบังคับต้องมีวงนี้)
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SECTION 5: COMBINATIONAL CIRCUITS
+             ========================================== -->
+        <div class="box">
+            <h2>5. วงจรคอมบิเนชั่น (Combinational Circuits)</h2>
+            <div class="content">
+                <div class="vocab">
+                    <strong>คุณสมบัติหลัก:</strong> เอาต์พุตขึ้นอยู่กับอินพุต <u>ในวินาทีนั้นเท่านั้น</u> (No Memory / No Feedback)
+                </div>
+                
+                <p><b>5.1 วงจรบวกเลข (Adders):</b></p>
+                <table>
+                    <tr><th>Type</th><th>Inputs</th><th>Outputs</th><th>Equations</th></tr>
+                    <tr><td>Half Adder</td><td>A, B</td><td>Sum, C<sub>out</sub></td><td><span class="eq">S=A&oplus;B</span>, <span class="eq">C<sub>out</sub>=A&middot;B</span></td></tr>
+                    <tr><td>Full Adder</td><td>A, B, C<sub>in</sub></td><td>Sum, C<sub>out</sub></td><td><span class="eq">S=A&oplus;B&oplus;C<sub>in</sub></span>, <span class="eq">C<sub>out</sub>=AB+C<sub>in</sub>(A&oplus;B)</span></td></tr>
+                </table>
+                <p><i>*หมายเหตุ: โครงสร้างวงจร Full Adder สร้างจากการใช้ 2 Half Adder ประกอบร่วมกับ 1 OR Gate</i></p>
+
+                <p><b>5.2 วงจรจัดการเส้นทางข้อมูล (Data Routing):</b></p>
+                <ul>
+                    <li><b>Encoder (เข้ารหัส):</b> เปลี่ยนการกดปุ่มให้เป็นเลขฐานสอง (เช่น $2^n$ In &rarr; $n$ Out)
+                        <br><i>*Priority Encoder:</i> หากกดปุ่มหลายอันพร้อมกัน จะให้สิทธิ์บิตที่มีค่าสูงสุดก่อน
+                    </li>
+                    <li><b>Decoder (ถอดรหัส):</b> เปลี่ยนฐานสองเป็นสายเลือกอุปกรณ์ ($n$ In &rarr; $2^n$ Out) นิยมใช้เปิด Chip Select (CS)</li>
+                    <li><b>Multiplexer (MUX):</b> ตัวเลือกข้อมูล ($2^n$ In &rarr; $1$ Out) มี Selector เป็นตัวสับสวิตช์ว่าจะให้ Input ไหนผ่านไปออกที่ Output
+                        <br><span class="eq">สมการ 2-to-1 MUX: Y = <span class="over">S</span>&middot;I<sub>0</sub> + S&middot;I<sub>1</sub></span>
+                    </li>
+                    <li><b>De-Multiplexer (De-MUX):</b> ตัวกระจายข้อมูล ($1$ In &rarr; $2^n$ Out)</li>
+                </ul>
+
+                <p><b>5.3 7-Segment & Multiplexing:</b></p>
+                <ul>
+                    <li><b>Common Cathode (ขาลบร่วม):</b> หลอดติดเมื่อจ่ายลอจิก <b>1 (High)</b></li>
+                    <li><b>Common Anode (ขาบวกร่วม):</b> หลอดติดเมื่อจ่ายลอจิก <b>0 (Low)</b></li>
+                    <li><b>การสแกน (Multiplexing):</b> กรณีมี 7-segment หลายหลัก (เช่น 4 หลัก) การต่อแบบธรรมดาจะเปลืองพอร์ต MCU มาก จึงใช้เทคนิค <u>Share Bus</u> โดยนำขา a-g ของทุกตัวมาต่อถึงกันทั้งหมด แล้วใช้วงจรสวิตช์ (Transistor) คอยเปิด/ปิดขา Common ทีละหลักสลับกันด้วยความเร็วสูง (>60Hz) ทำให้ตาคนมองเห็นว่าหลอดไฟติดพร้อมกันทุกหลัก เป็นการประหยัดพอร์ตและฮาร์ดแวร์อย่างมหาศาล</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SECTION 6: SEQUENTIAL & TIMING
+             ========================================== -->
+        <div class="box">
+            <h2>6. วงจรซีเควนเชียล & สัญญาณเวลา (Sequential)</h2>
+            <div class="content">
+                <div class="vocab">
+                    <strong>หัวใจสำคัญ:</strong> Output ในปัจจุบัน ขึ้นอยู่กับ Input ปัจจุบัน <b>และ</b> <u>สภาวะที่ผ่านมา (มี Memory ป้อนกลับ/Feedback)</u>
+                </div>
+                
+                <p><b>6.1 ประเภทของวงจร Sequential:</b></p>
+                <div class="bg-gray">
+                    <b>1. Synchronous (มี Clock กลางควบคุม):</b> 
+                    <br>อุปกรณ์ทุกตัวรับสัญญาณนาฬิกา (Clock) ลูกเดียวกัน เปลี่ยนสภาวะพร้อมกันหมด ขจัดปัญหาความหน่วงสะสม (เสถียรและเร็วที่สุด)
+                    <br><br>
+                    <b>2. Asynchronous (ไม่มี Clock หรือต่อทอดกัน):</b> 
+                    <br>เปลี่ยนสภาวะตามยถากรรม หรือรับ Clock ส่งต่อกันไปเรื่อยๆ (Ripple) ทำให้เกิด Propagation Delay สะสม แบ่งเป็น:
+                    <ul>
+                        <li><b>Fundamental Mode:</b> เปลี่ยนสถานะเมื่อ Input เปลี่ยนแปลง โดยมีข้อแม้ว่า Input ต้องไม่เปลี่ยนพร้อมกันหลายตัว และต้องรอให้วงจรนิ่ง (Stable) ก่อนเปลี่ยน Input ครั้งต่อไป</li>
+                        <li><b>Pulse Mode:</b> คล้าย Fundamental แต่อินพุตมาในรูปของ Pulse สั้นๆ</li>
+                    </ul>
+                </div>
+
+                <p><b>6.2 เครื่องจักรสถานะจำกัด (FSM - Finite State Machine):</b></p>
+                <ul>
+                    <li><b>Mealy Machine:</b> Output เกิดจาก State ปัจจุบัน + <u>Input ปัจจุบัน</u> (ถ้า Input เปลี่ยนกะทันหัน Output ก็เปลี่ยนทันที อาจเกิด Glitch ได้ง่าย)</li>
+                    <li><b>Moore Machine:</b> Output เกิดจาก <u>State ปัจจุบันเท่านั้น</u> (วงจรเสถียรกว่า เปลี่ยนแปลงตามจังหวะ Clock เท่านั้น)</li>
+                </ul>
+
+                <p><b>6.3 การวิเคราะห์ Timing (Timing Diagram Analysis):</b></p>
+                <!-- Mini Timing SVG -->
+                <svg width="100" height="35" viewBox="0 0 200 70">
+                    <text x="5" y="15" font-size="12">CLK</text><polyline points="25,20 40,20 40,5 60,5 60,20 80,20 80,5 100,5 100,20 120,20" fill="none" stroke="#e74c3c" stroke-width="2"/>
+                    <text x="5" y="45" font-size="12">DATA</text><polyline points="25,50 35,50 45,35 70,35 80,50 120,50" fill="none" stroke="#2980b9" stroke-width="2"/>
+                    <line x1="80" y1="0" x2="80" y2="60" stroke="#777" stroke-dasharray="2,2"/><line x1="70" y1="28" x2="80" y2="28" stroke="#27ae60" stroke-width="2"/><line x1="70" y1="26" x2="70" y2="30" stroke="#27ae60" stroke-width="2"/><text x="63" y="25" font-size="10" fill="#27ae60">tsu</text>
+                    <line x1="80" y1="28" x2="90" y2="28" stroke="#8e44ad" stroke-width="2"/><line x1="90" y1="26" x2="90" y2="30" stroke="#8e44ad" stroke-width="2"/><text x="82" y="25" font-size="10" fill="#8e44ad">th</text>
+                </svg>
+                <ul>
+                    <li><b>Setup Time ($t_{su}$):</b> เวลาต่ำสุดที่ข้อมูล (Data) ต้อง <u>มารอก่อน</u> ขอบสัญญาณนาฬิกา และต้องนิ่งห้ามแกว่ง</li>
+                    <li><b>Hold Time ($t_h$):</b> เวลาต่ำสุดที่ข้อมูลต้อง <u>ค้างสถานะเอาไว้</u> หลังจากขอบสัญญาณนาฬิกาผ่านไปแล้ว</li>
+                    <li><b>Propagation Delay ($t_{pd}$):</b> เวลาความหน่วงที่วงจรต้องใช้ในการประมวลผลภายใน (จาก Input วิ่งไปถึง Output)</li>
+                    <li>*หากละเมิดกฎ $t_{su}$ หรือ $t_h$ ฟลิปฟลอปจะเข้าสู่สภาวะ <b>Metastability</b> (เอ๋อ ไม่รู้จะออก 0 หรือ 1)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SECTION 7: FLIP-FLOPS & LATCHES
+             ========================================== -->
+        <div class="box">
+            <h2>7. ฟลิปฟลอป & แลตช์ (Latches & Flip-Flops)</h2>
+            <div class="content">
+                <div class="alert">
+                    <strong>ความแตกต่างที่สำคัญ:</strong><br>
+                    - <b>Latch:</b> อุปกรณ์แบบ <u>Level-triggered</u> (ไวต่อระดับไฟ) ทะลุผ่านทันทีที่ไฟเป็น 1<br>
+                    - <b>Flip-Flop:</b> อุปกรณ์แบบ <u>Edge-triggered</u> (ไวต่อขอบสัญญาณ) เปลี่ยนค่าเฉพาะจังหวะขอบขาขึ้น (&uarr;) หรือขาลง (&darr;) เท่านั้น
+                </div>
+
+                <p><i>*หมายเหตุ: โครงสร้างพื้นฐานของ SR Latch แบบไขว้สร้างจาก 2 NOR Gate (ห้ามป้อน S=1, R=1 จะทำให้ Q และ Q' = 0 ซึ่งผิดกฎ Invalid State)</i></p>
+
+                <p><b>7.1 สมการลักษณะ (Characteristic Equations):</b></p>
+                <ul>
+                    <li><b>SR FF:</b> <span class="eq">Q<sub>next</sub> = S + <span class="over">R</span>Q</span> (สภาวะ S=R=1 ถือเป็น Invalid State ห้ามใช้)</li>
+                    <li><b>D FF (Data):</b> <span class="eq">Q<sub>next</sub> = D</span> (หน่วงเวลาข้อมูล 1 คล็อก)</li>
+                    <li><b>JK FF:</b> <span class="eq">Q<sub>next</sub> = J<span class="over">Q</span> + <span class="over">K</span>Q</span> (แก้ปัญหา SR โดยเมื่อ J=K=1 สถานะจะ <b>Toggle (สลับค่า)</b>)</li>
+                    <li><b>T FF (Toggle):</b> <span class="eq">Q<sub>next</sub> = T &oplus; Q</span> (สร้างจากการช็อตขา J และ K เข้าด้วยกัน)</li>
+                </ul>
+
+                <div class="bg-gray">
+                    <b>การแก้ปัญหา Race Around ใน JK Flip-Flop:</b>
+                    <br>หากป้อน J=K=1 ในฟลิปฟลอปที่ไม่มีระบบกันขอบสัญญาณ เมื่อ Clock กว้างกว่าเวลาหน่วงของเกต สถานะจะสลับ 0-1-0-1 รัวๆ จนคุมไม่ได้
+                    <br><b>วิธีแก้:</b> ออกแบบเป็น <b>Master-Slave JK</b> (ใช้ฟลิปฟลอป 2 ตัวต่ออนุกรมกัน) Master รับข้อมูลตอนขาขึ้น(&uarr;) และบังคับให้ Slave ปล่อยข้อมูลตอนขาลง(&darr;) เท่านั้น ข้อมูลจึงเปลี่ยนแค่ 1 ครั้งต่อ 1 รอบ Clock
+                </div>
+
+                <p><b>7.2 พอร์ตบังคับแบบอะซิงโครนัส (Asynchronous Clear/Preset):</b></p>
+                <p>ขา PR (Preset) และ CLR (Clear) มักจะเป็น Active Low <u>มีอำนาจสูงสุดในวงจร</u> สามารถบังคับให้ Q เป็น 1 หรือ 0 ได้ทันทีโดย <u>ไม่ต้องรอจังหวะ Clock</u> (นิยมใช้รีเซ็ตตอนเปิดระบบ)</p>
+
+                <p><b>7.3 ตารางกระตุ้น (Excitation Table):</b> *สำคัญมากในการออกแบบวงจรนับ</p>
+                <table>
+                    <tr><th>Q<sub>n</sub> &rarr; Q<sub>n+1</sub></th><th>S</th><th>R</th><th>J</th><th>K</th><th>D</th><th>T</th></tr>
+                    <tr><td>0 &rarr; 0 (Hold 0)</td><td>0</td><td>X</td><td>0</td><td>X</td><td>0</td><td>0</td></tr>
+                    <tr><td>0 &rarr; 1 (Set)</td><td>1</td><td>0</td><td>1</td><td>X</td><td>1</td><td>1</td></tr>
+                    <tr><td>1 &rarr; 0 (Reset)</td><td>0</td><td>1</td><td>X</td><td>1</td><td>0</td><td>1</td></tr>
+                    <tr><td>1 &rarr; 1 (Hold 1)</td><td>X</td><td>0</td><td>X</td><td>0</td><td>1</td><td>0</td></tr>
+                </table>
+                <p><i>*ค่า X คือ Don't Care (นำไปใส่ K-Map เพื่อขยายวงจรให้สั้นลงได้)</i></p>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SECTION 8: SHIFT REGISTERS
+             ========================================== -->
+        <div class="box">
+            <h2>8. วงจรเลื่อนข้อมูล (Shift Registers)</h2>
+            <div class="content">
+                <div class="vocab">
+                    นำ D Flip-flop มาต่ออนุกรมกัน ทำหน้าที่เป็นหน่วยความจำเก็บชั่วคราวและเคลื่อนย้ายข้อมูล
+                </div>
+                <p><b>ประเภทหลัก 4 ชนิด:</b></p>
+                <ul>
+                    <li><b>SISO (Serial In - Serial Out):</b> อนุกรมเข้า อนุกรมออก (ใช้หน่วงเวลา Delay 1 บิต/Clock)</li>
+                    <li><b>SIPO (Serial In - Parallel Out):</b> อนุกรมเข้า ขนานออก (แปลงสัญญาณสายเดี่ยวแตกออกหลายเส้น เช่น จอ LCD)</li>
+                    <li><b>PISO (Parallel In - Serial Out):</b> ขนานเข้า อนุกรมออก (โหลดข้อมูลขนานยิงส่งสายสัญญาณเส้นเดียว)</li>
+                    <li><b>PIPO (Parallel In - Parallel Out):</b> ขนานเข้า ขนานออก (รวดเร็วที่สุด ใช้เป็น Buffer เก็บข้อมูลในหน่วยประมวลผล)</li>
+                </ul>
+
+                <div class="bg-gray">
+                    <b>การประยุกต์วงจรเลื่อนเป็นวงจรนับ (Shift Counters):</b>
+                    <br><b>1. Ring Counter (แบบวงแหวน):</b> โยงเอาต์พุต Q ตัวสุดท้าย กลับไปเข้า D ตัวแรกสุด (Mod-N)
+                    <br>สภาวะ (4-bit): <span class="eq">1000 &rarr; 0100 &rarr; 0010 &rarr; 0001 &rarr; (วนกลับ)</span>
+                    <br><br>
+                    <b>2. Johnson / Twisted-Ring Counter:</b> โยงเอาต์พุต <b><span class="over">Q</span></b> (แบบตรงข้าม) ตัวสุดท้าย กลับไปเข้า D ตัวแรกสุด (Mod-2N คุ้มค่ากว่า Ring Counter)
+                    <br>สภาวะ (3-bit): <span class="eq">000 &rarr; 100 &rarr; 110 &rarr; 111 &rarr; 011 &rarr; 001 &rarr; 000</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SECTION 9: COUNTER CIRCUITS (Detailed Design)
+             ========================================== -->
+        <div class="box">
+            <h2>9. วงจรนับ (Counter Circuits & Design)</h2>
+            <div class="content">
+                <p><b>9.1 วงจรนับแบบอซิงโครนัส (Asynchronous / Ripple Counter):</b></p>
+                <ul>
+                    <li>สัญญาณ Clock ป้อนเข้าแค่ FF ตัวแรก (LSB) เท่านั้น</li>
+                    <li>ตัวถัดไปรับสัญญาณ Clock มาจากเอาต์พุตของตัวก่อนหน้า ทำให้เกิด **Propagation Delay สะสม** (ทำงานช้าและมีข้อจำกัดด้านความถี่)</li>
+                    <li><b>นับขึ้น (UP):</b> ใช้ FF ขอบลง(&darr;) โยงเอาต์พุต <b>Q</b> ไปเป็น CLK ตัวถัดไป</li>
+                    <li><b>นับลง (DOWN):</b> ใช้ FF ขอบลง(&darr;) โยงเอาต์พุต <b><span class="over">Q</span></b> ไปเป็น CLK ตัวถัดไป</li>
+                    <li><b>การตัด Mod-N:</b> หากต้องการนับ Mod-10 (0 ถึง 9) เมื่อถึงสภาวะที่ 10 (<span class="eq">1010</span>) ให้ดึงสาย Q3 และ Q1 ไปเข้า NAND Gate แล้วป้อนกลับไปล้างค่าที่ขา <span class="over">CLR</span> ของทุกตัว (เกิด Glitch ได้ง่าย)</li>
+                </ul>
+                
+                <p><b>9.2 ขั้นตอนการออกแบบ Synchronous Counter (ป้อน CLK ทุกตัว):</b></p>
+                <div class="step-box">
+                    <b>โจทย์: ออกแบบวงจรนับขึ้น 0 &rarr; 1 &rarr; 2 &rarr; 3 &rarr; 0 (ใช้ JK Flip-flop)</b>
+                    <br>
+                    <b>Step 1:</b> กำหนดตัวแปร (2 บิต แทน 0-3 ได้) ใช้ FF 2 ตัว คือ A และ B<br>
+                    <b>Step 2:</b> สร้าง State Table + Excitation Table
+                    <table>
+                        <tr><th colspan="2">Present</th><th colspan="2">Next</th><th colspan="4">FF Inputs</th></tr>
+                        <tr><th>A</th><th>B</th><th>A+</th><th>B+</th><th>Ja</th><th>Ka</th><th>Jb</th><th>Kb</th></tr>
+                        <tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>X</td><td>1</td><td>X</td></tr>
+                        <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>X</td><td>X</td><td>1</td></tr>
+                        <tr><td>1</td><td>0</td><td>1</td><td>1</td><td>X</td><td>0</td><td>1</td><td>X</td></tr>
+                        <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>X</td><td>1</td><td>X</td><td>1</td></tr>
+                    </table>
+                    <b>Step 3: หา K-Map ของ J,K แต่ละตัว</b><br>
+                    - หา <span class="eq">Ja</span>: จากค่า [0, 1, X, X] วง K-Map ได้ <span class="eq">Ja = B</span><br>
+                    - หา <span class="eq">Ka</span>: จากค่า [X, X, 0, 1] วง K-Map ได้ <span class="eq">Ka = B</span><br>
+                    - หา <span class="eq">Jb</span>: จากค่า [1, X, 1, X] วงทั้งหมด ได้ <span class="eq">Jb = 1</span><br>
+                    - หา <span class="eq">Kb</span>: จากค่า [X, 1, X, 1] วงทั้งหมด ได้ <span class="eq">Kb = 1</span><br>
+                    <b>Step 4: วาดวงจร</b> (นำสมการที่ได้ไปต่อสายวงจรจริง)
+                </div>
+                
+                <div class="alert">
+                    <strong>ภาวะ Lock-out Condition:</strong> 
+                    <br>หากวงจรพลัดหลงเข้าไปอยู่ในสถานะที่ไม่ได้ใช้ออกแบบ (Unused States) แล้วไม่สามารถวนกลับมาสถานะปกติได้เรียกว่า Lock-out 
+                    <br><u>วิธีแก้:</u> ในขั้นตอนวาด State Diagram ต้องบังคับลากเส้นจาก Unused States ทุกตัว ให้ชี้กลับมาที่สภาวะเริ่มต้นเสมอ (เช่น 000)
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SECTION 10: HARDWARE ICs & LOGIC FAMILIES
+             ========================================== -->
+        <div class="box">
+            <h2>10. คุณสมบัติทางไฟฟ้า & ไอซี (Logic Families)</h2>
+            <div class="content">
+                <div class="vocab">
+                    ตระกูลลอจิกแบ่งเป็น 2 กลุ่มใหญ่: <b>Bipolar (TTL)</b> และ <b>Unipolar (CMOS)</b>
+                </div>
+                
+                <p><b>10.1 พารามิเตอร์ที่สำคัญ:</b></p>
+                <ul>
+                    <li><b>V<sub>IH(min)</sub>:</b> แรงดันไฟฟ้าต่ำสุดที่เกตจะยอมรับและมองว่าเป็น ลอจิก "1"</li>
+                    <li><b>V<sub>IL(max)</sub>:</b> แรงดันไฟฟ้าสูงสุดที่เกตจะยอมรับและมองว่าเป็น ลอจิก "0"</li>
+                    <li><b>Noise Margin:</b> ส่วนเผื่อของระดับแรงดันเพื่อป้องกันสัญญาณรบกวน ยิ่งกว้างยิ่งดีต่อระบบ</li>
+                    <li><b>Fan-out:</b> จำนวนเกตโหลดสูงสุดที่เอาต์พุตของเกต 1 ตัวสามารถนำไปต่อขนานขับให้ทำงานได้ โดยที่ระดับแรงดันไฟฟ้าไม่ตก</li>
+                </ul>
+
+                <table>
+                    <tr><th>คุณสมบัติ</th><th>TTL (Transistor-Transistor)</th><th>CMOS (MOSFET)</th></tr>
+                    <tr><td><b>แรงดันไฟเลี้ยง</b></td><td>ต้อง 5V เป๊ะ (74xx Series)</td><td>ยืดหยุ่น 3V - 15V (40xx Series)</td></tr>
+                    <tr><td><b>การใช้พลังงาน</b></td><td>กินไฟสูง (มีความร้อนสะสม)</td><td><b>กินไฟต่ำมาก (Low Power)</b></td></tr>
+                    <tr><td><b>ความหนาแน่น</b></td><td>ต่ำ (ใช้ชิ้นส่วนเยอะ)</td><td><b>สูง (ยัดลง IC ได้หลายล้านเกต)</b></td></tr>
+                    <tr><td><b>จุดอ่อน</b></td><td>กินกระแสหนักในวงจรขนาดใหญ่</td><td><b>ไวต่อไฟฟ้าสถิต (พังง่ายถ้าสัมผัส)</b></td></tr>
+                </table>
+
+                <p><b>10.2 เบอร์ IC มาตรฐาน (74 Series - TTL):</b></p>
+                <div style="column-count: 2; column-gap: 2mm; font-size: 6px;">
+                    - <b>7400:</b> Quad 2-In NAND<br>
+                    - <b>7402:</b> Quad 2-In NOR<br>
+                    - <b>7404:</b> Hex NOT (Inverter)<br>
+                    - <b>7408:</b> Quad 2-In AND<br>
+                    - <b>7432:</b> Quad 2-In OR<br>
+                    - <b>7486:</b> Quad 2-In XOR<br>
+                    - <b>7483:</b> 4-bit Full Adder<br>
+                    - <b>74138:</b> 3-to-8 Decoder<br>
+                    - <b>74151:</b> 8-to-1 MUX<br>
+                    - <b>7474:</b> Dual D Flip-Flop<br>
+                    - <b>7476:</b> Dual JK Flip-Flop<br>
+                    - <b>7490:</b> Decade Counter
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SECTION 11: VERILOG HDL CRASH COURSE
+             ========================================== -->
+        <div class="box">
+            <h2>11. โค้ด Verilog HDL เบื้องต้น (Hardware Description)</h2>
+            <div class="content">
+                <div class="vocab">
+                    <strong>Verilog HDL:</strong> ภาษาที่ใช้บรรยายโครงสร้างของฮาร์ดแวร์ระดับเกต หรือระดับพฤติกรรม เพื่อนำไปโปรแกรมลงบนชิป FPGA
+                </div>
+
+                <p><b>11.1 การออกแบบ Combinational - วงจร Full Adder:</b></p>
+                <div class="code-block">
+<span class="code-keyword">module</span> Full_Adder(
+    <span class="code-keyword">input</span>  A, B, Cin,
+    <span class="code-keyword">output</span> Sum, Cout
+);
+    <span class="code-comment">// การเขียนแบบ Dataflow (Continuous Assignment) ใช้ assign สำหรับวงจร Combinational</span>
+    <span class="code-keyword">assign</span> Sum  = A ^ B ^ Cin;
+    <span class="code-keyword">assign</span> Cout = (A &amp; B) | (Cin &amp; (A ^ B));
+<span class="code-keyword">endmodule</span>
+                </div>
+
+                <p><b>11.2 การออกแบบ Sequential - D Flip-Flop (Edge-Triggered):</b></p>
+                <div class="code-block">
+<span class="code-keyword">module</span> D_FF(
+    <span class="code-keyword">input</span>  clk, reset, D,
+    <span class="code-keyword">output reg</span> Q <span class="code-comment">// ต้องประกาศ output เป็น reg เมื่อใช้งานภายใน always block</span>
+);
+    <span class="code-comment">// always block จะถูกกระตุ้นเมื่อเกิดขอบขาขึ้นของ clk หรือขอบขาขึ้นของ reset</span>
+    <span class="code-keyword">always</span> @(<span class="code-keyword">posedge</span> clk <span class="code-keyword">or posedge</span> reset) <span class="code-keyword">begin</span>
+        <span class="code-keyword">if</span> (reset) 
+            Q &lt;= <span class="code-number">1'b0</span>; <span class="code-comment">// Asynchronous Reset (มีอำนาจล้างค่าทันทีไม่ต้องรอคล็อก)</span>
+        <span class="code-keyword">else</span> 
+            Q &lt;= D;    <span class="code-comment">// เลื่อนค่า D ไปไว้ใน Q แบบ Non-blocking Assignment (<=) ซึ่งบังคับใช้กับวงจร Sequential</span>
+    <span class="code-keyword">end</span>
+<span class="code-keyword">endmodule</span>
+                </div>
+
+                <p><b>11.3 การออกแบบวงจรนับ - 4-bit Up Counter:</b></p>
+                <div class="code-block">
+<span class="code-keyword">module</span> Up_Counter(
+    <span class="code-keyword">input</span> clk, reset,
+    <span class="code-keyword">output reg</span> [<span class="code-number">3</span>:<span class="code-number">0</span>] count <span class="code-comment">// ประกาศเป็นอาเรย์ขนาด 4 บิต (บิต 3 ถึง บิต 0)</span>
+);
+    <span class="code-keyword">always</span> @(<span class="code-keyword">posedge</span> clk <span class=\"code-keyword\">or posedge</span> reset) <span class="code-keyword">begin</span>
+        <span class="code-keyword">if</span> (reset)
+            count &lt;= <span class="code-number">4'b0000</span>; <span class="code-comment">// เคลียร์ค่าเริ่มต้นกลับเป็น 0</span>
+        <span class="code-keyword">else</span>
+            count &lt;= count + <span class="code-number">1</span>; <span class="code-comment">// สั่งนับขึ้นทีละ 1 ทุกๆ ครั้งที่มี Clock เข้ามา</span>
+    <span class="code-keyword">end</span>
+<span class="code-keyword">endmodule</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </body>
 </html>
