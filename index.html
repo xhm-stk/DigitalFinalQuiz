@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Systems Exam Portal (Dark Mode)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
@@ -27,7 +29,7 @@
     <div id="app"></div>
 
     <script>
-        // --- ข้อมูลฐานคำถาม (ดึงจากไฟล์ PDF และ Text ที่อัปโหลด) ---
+        // --- ส่วนที่ 1: ข้อมูลฐานคำถามแบบเลือกตอบ (MCQ) ---
         const baseQuestions = [
             { chapter: "ระบบตัวเลข", question: "สัญญาณดิจิทัลมีกี่สถานะ?", options: ["1 สถานะ", "2 สถานะ", "3 สถานะ", "ไม่จำกัด"], correctAnswer: 1, explanation: "สัญญาณดิจิทัลมี 2 สถานะ คือ 0 (Low) และ 1 (High)" },
             { chapter: "รหัสไบนารี่ (Week 11)", question: "รหัส BCD-8421 ของเลข 7 คือข้อใด?", options: ["0110", "1000", "0111", "1001"], correctAnswer: 2, explanation: "เลข 7 ในระบบฐานสิบ แปลงเป็นเลขฐานสองแบบ BCD-8421 ใช้ 4 บิต คือ 0111" },
@@ -46,30 +48,83 @@
             { chapter: "รหัสต่าง ๆ (Week 11)", question: "ข้อใดเป็นคุณสมบัติเด่นของ Gray Code?", options: ["ใช้บิตน้อยที่สุด", "รหัสบิตถัดไปเปลี่ยนแปลงเพียงครั้งละ 1 บิต", "คำนวณทางคณิตศาสตร์ได้ง่าย", "เป็นรหัสที่มีการถ่วงน้ำหนัก"], correctAnswer: 1, explanation: "คุณสมบัติสำคัญของ Gray Code คือเมื่อค่าเปลี่ยน 1 สเตป บิตจะเปลี่ยนสถานะเพียงบิตเดียวเท่านั้น เพื่อลดข้อผิดพลาด" }
         ];
 
-        // --- สร้างชุดข้อสอบ 50 ข้อ ---
+        // --- ส่วนที่ 2: ข้อมูลฐานคำถามเติมคำ (Fill-in-the-blank) ---
+        const fillBaseQuestions = [
+            { chapter: "วงจรคอมบิเนชั่นฯ", question: "วงจรคอมบิเนชั่นไม่มีการป้อนกลับสัญญาณ และไม่มี __________ เพื่อเก็บข้อมูลสภาวะก่อนหน้า", answer: "หน่วยความจำ" },
+            { chapter: "วงจรฟลิปฟลอป", question: "ฟลิปฟลอปแบบ JK เมื่อมีการป้อนลอจิก J=1, K=1 จะเกิดสภาวะที่เรียกว่า __________", answer: "Toggle (สลับสถานะ)" },
+            { chapter: "ลอจิกเกต", question: "ตัวแปรลอจิกมีลักษณะเป็น __________ Variable คือมีสภาวะได้เพียง 2 สถานะเท่านั้น", answer: "Bi-State" },
+            { chapter: "รหัสไบนารี่", question: "รหัสที่มีการเปลี่ยนแปลงบิตเพียง 1 บิตในทุกๆ การเปลี่ยนลำดับค่าที่ติดกัน คือรหัส __________", answer: "Gray Code" },
+            { chapter: "วงจร Sequential", question: "อุปกรณ์ที่ทำหน้าที่เป็นหน่วยความจำขนาด 1 บิต และเป็นพื้นฐานของวงจร Sequential ทั้งหมดคือ __________", answer: "Flip-Flop (ฟลิปฟลอป)" },
+            { chapter: "วงจรเลื่อนข้อมูล", question: "วงจรเลื่อนข้อมูลแบบรับข้อมูลเข้าพร้อมกัน และออกพร้อมกันทั้งหมด มีชื่อย่อภาษาอังกฤษ 4 ตัวอักษรคือ __________", answer: "PIPO" },
+            { chapter: "รหัสไบนารี่", question: "รหัสตัวเลข BCD ย่อมาจากคำเต็มว่า __________", answer: "Binary Coded Decimal" },
+            { chapter: "วงจรนับ", question: "__________ คือวงจรตรรกะแบบลำดับที่ใช้ Flip-Flop ทำหน้าที่นับจำนวนสัญญาณพัลส์ (Pulse)", answer: "วงจรนับ (Counter)" },
+            { chapter: "วงจรคอมบิเนชั่นฯ", question: "การนำ LED 7-segment มาต่อกันหลายหลัก โดยใช้ขา Common ร่วมกันและสลับกวาดการทำงานอย่างรวดเร็ว เรียกว่าหลักการ __________", answer: "มัลติเพล็กซ์ (Multiplex)" },
+            { chapter: "รหัสต่าง ๆ", question: "รหัส ASCII แบบมาตรฐานเพื่อใช้เก็บตัวอักษรและสัญลักษณ์ มีขนาดข้อมูล __________ บิตต่อหนึ่งอักขระ", answer: "7" }
+        ];
+
+        // --- ส่วนที่ 3: ข้อมูลฐานคำถามวิธีทำ/อธิบาย (Essay) ---
+        const essayBaseQuestions = [
+            { chapter: "วงจร Sequential", question: "จงอธิบายความแตกต่างหลักระหว่าง วงจร Combinational และ วงจร Sequential มาพอสังเขป", answer: "วงจร Combinational เอาต์พุตขึ้นอยู่กับอินพุตปัจจุบันเท่านั้น ไม่มีหน่วยความจำ แต่วงจร Sequential เอาต์พุตจะขึ้นอยู่กับทั้งอินพุตปัจจุบันและสถานะก่อนหน้า (มีหน่วยความจำ/Feedback)" },
+            { chapter: "วงจรเลื่อนข้อมูล", question: "ให้อธิบายหลักการทำงานและประโยชน์ของการนำ Shift Register (วงจรเลื่อนข้อมูล) ไปประยุกต์ใช้งาน", answer: "ใช้แปลงข้อมูลอนุกรมเป็นขนาน (SIPO) หรือข้อมูลขนานเป็นอนุกรม (PISO) สำหรับการสื่อสาร ใช้จัดเก็บข้อมูลชั่วคราว รวมถึงการทำวงจรหน่วงเวลา (Delay)" },
+            { chapter: "วงจรนับ", question: "จงยกตัวอย่างการประยุกต์ใช้งานวงจรนับ (Counter Circuit) ในชีวิตประจำวันหรือในระบบดิจิทัล มาอย่างน้อย 2 ตัวอย่าง", answer: "1. นาฬิกาดิจิทัล/นาฬิกาจับเวลา สำหรับนับวินาที นาที 2. วงจรแบ่งความถี่ (Frequency Divider) ในไมโครคอนโทรลเลอร์" },
+            { chapter: "วงจรฟลิปฟลอป", question: "จงอธิบายสภาวะการทำงานของ JK Flip-Flop เมื่อป้อนอินพุต (J=0, K=0) และ (J=1, K=1)", answer: "เมื่อ J=0, K=0 จะเกิดสภาวะ No Change (คงค่าเดิมไม่เปลี่ยนแปลง) และเมื่อ J=1, K=1 จะเกิดสภาวะ Toggle (สลับสถานะไปมาระหว่าง 0 กับ 1 เมื่อมีสัญญาณนาฬิกามากระตุ้น)" },
+            { chapter: "รหัสต่าง ๆ", question: "อธิบายเหตุผลสำคัญที่ต้องนำรหัส Gray Code มาประยุกต์ใช้ในระบบดิจิทัล แทนการใช้รหัสฐานสองปกติ", answer: "เพราะ Gray Code มีการเปลี่ยนแปลงลอจิกเพียง 1 บิตเสมอในแต่ละลำดับค่าที่เปลี่ยนไป ทำให้สามารถลดปัญหา Glitch หรือการประมวลผลผิดพลาดในจังหวะรอยต่อของการเปลี่ยนข้อมูลได้ดี" },
+            { chapter: "วงจรเลื่อนข้อมูล", question: "จงเปรียบเทียบข้อแตกต่างระหว่างวงจรเลื่อนข้อมูลแบบ SISO (Serial-In Serial-Out) และ PIPO (Parallel-In Parallel-Out)", answer: "SISO รับข้อมูลเข้าทีละบิตและส่งออกทีละบิต ต้องใช้สัญญาณนาฬิกาเท่าจำนวนบิต ทำให้ช้ากว่า PIPO ที่สามารถรับข้อมูลทุกบิตพร้อมกันและส่งออกได้ทันทีใน 1 สัญญาณนาฬิกา" },
+            { chapter: "ระบบตัวเลข", question: "อธิบายขั้นตอนในการแปลงเลขทศนิยมฐานสิบ (ตัวอย่างเช่น 0.625) ให้กลายเป็นเลขฐานสอง", answer: "นำส่วนทศนิยมมาคูณด้วย 2 ไปเรื่อยๆ แล้วนำค่าจำนวนเต็มที่ได้จากผลคูณในแต่ละรอบ (0 หรือ 1) มาเรียงจากบนลงล่าง เขียนออกมาเป็นทศนิยมฐานสอง" },
+            { chapter: "ระบบตัวเลข", question: "เหตุใดสัญญาณดิจิทัลจึงได้รับความนิยมและนำมาใช้ประมวลผลในคอมพิวเตอร์ปัจจุบันมากกว่าสัญญาณอนาล็อก?", answer: "เพราะสัญญาณดิจิทัลมีเพียง 2 สถานะ (0, 1) ทำให้มีความทนทานต่อสัญญาณรบกวน (Noise) ได้สูงกว่า จัดเก็บหรือคัดลอกได้โดยไม่เสียคุณภาพ และสร้างวงจรตรรกะสำหรับประมวลผลได้ง่ายกว่า" },
+            { chapter: "วงจรคอมบิเนชั่นฯ", question: "การต่อใช้งาน LED 7-Segment แบบ Common Anode และ Common Cathode มีความแตกต่างกันอย่างไร?", answer: "แบบ Common Anode (แอโนดร่วม) ต้องป้อนลอจิก 0 (Low) ที่ขาสัญญาณเพื่อให้หลอด LED ติดสว่าง ส่วนแบบ Common Cathode (แคโทดร่วม) ต้องป้อนลอจิก 1 (High) เพื่อให้หลอด LED ติดสว่าง" },
+            { chapter: "ลอจิกเกต", question: "จงอธิบายความหมายของคำว่า Bi-State Variable (ตัวแปรสองสถานะ) ในทฤษฎีลอจิก", answer: "คือตัวแปรที่สามารถมีสภาวะความเป็นไปได้เพียง 2 สถานะเท่านั้น เช่น 0 หรือ 1, เปิด หรือ ปิด, จริง หรือ เท็จ และมีข้อจำกัดคือไม่สามารถเป็นทั้งสองสถานะพร้อมกันในเวลาเดียวกันได้" }
+        ];
+
+        // --- สร้างชุดข้อสอบ 50 ข้อ แบ่ง 3 ส่วน ---
         function generateExamSet(setName, prefixId) {
             let exam = [];
-            const shuffledBase = [...baseQuestions].sort(() => Math.random() - 0.5);
             
-            for (let i = 0; i < 50; i++) {
-                if (i < shuffledBase.length) {
-                    exam.push({ id: `${prefixId}-${i+1}`, ...shuffledBase[i] });
-                } else {
-                    const baseRef = shuffledBase[i % shuffledBase.length];
-                    exam.push({
-                        id: `${prefixId}-${i+1}`,
-                        chapter: baseRef.chapter,
-                        question: `[ข้อสอบเสมือน ${i+1}] ${baseRef.question}`,
-                        options: baseRef.options,
-                        correctAnswer: baseRef.correctAnswer,
-                        explanation: `(เนื้อหาอ้างอิง) ${baseRef.explanation}`
-                    });
-                }
+            // ส่วนที่ 1: แบบเลือกตอบ (MCQ) - 30 ข้อ
+            const shuffledBase = [...baseQuestions].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < 30; i++) {
+                const baseRef = shuffledBase[i % shuffledBase.length];
+                exam.push({
+                    id: `${prefixId}-MCQ-${i+1}`,
+                    type: 'mcq',
+                    chapter: baseRef.chapter,
+                    question: `[ส่วนที่ 1: เลือกตอบ] ${baseRef.question}`,
+                    options: baseRef.options,
+                    correctAnswer: baseRef.correctAnswer,
+                    explanation: baseRef.explanation
+                });
             }
+
+            // ส่วนที่ 2: เติมคำ (Fill-in-the-blank) - 10 ข้อ
+            const shuffledFill = [...fillBaseQuestions].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < 10; i++) {
+                exam.push({
+                    id: `${prefixId}-FILL-${i+1}`,
+                    type: 'fill',
+                    chapter: shuffledFill[i].chapter,
+                    question: `[ส่วนที่ 2: เติมคำ] ข้อที่ ${i+1} ${shuffledFill[i].question}`,
+                    correctAnswer: shuffledFill[i].answer,
+                    explanation: "คีย์เวิร์ดสำคัญ: " + shuffledFill[i].answer
+                });
+            }
+
+            // ส่วนที่ 3: แสดงวิธีทำ (Essay/Show Work) - 10 ข้อ
+            const shuffledEssay = [...essayBaseQuestions].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < 10; i++) {
+                exam.push({
+                    id: `${prefixId}-ESSAY-${i+1}`,
+                    type: 'essay',
+                    chapter: shuffledEssay[i].chapter,
+                    question: `[ส่วนที่ 3: แสดงวิธีทำ] ข้อที่ ${i+1} ${shuffledEssay[i].question}`,
+                    correctAnswer: shuffledEssay[i].answer,
+                    explanation: "การตรวจคำตอบส่วนนี้ ผู้สอนจะพิจารณาจากความเข้าใจและการอธิบายที่ถูกต้องตามหลักทฤษฎี"
+                });
+            }
+
             return exam;
         }
 
-        // เพิ่มเป็น 5 ชุดตามที่ผู้ใช้ต้องการ
+        // โหลดข้อมูล 5 ชุด
         const examSets = {
             'A': { title: 'ชุดที่ 1 (SET A)', data: generateExamSet('ชุดที่ 1 (SET A)', 'A') },
             'B': { title: 'ชุดที่ 2 (SET B)', data: generateExamSet('ชุดที่ 2 (SET B)', 'B') },
@@ -84,17 +139,45 @@
             currentSetId: null,
             currentIdx: 0,
             answers: [],
-            history: JSON.parse(localStorage.getItem('digitalExamHistory_Dark')) || [],
+            history: JSON.parse(localStorage.getItem('digitalExamHistory_V2')) || [],
             viewingHistoryItem: null
         };
+        let submitConfirmState = false;
+
+        // --- ระบบ Auto Save (Resume) เมื่อผู้ใช้กด Refresh หน้าจอ ---
+        function initAutoResume() {
+            const savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V2'));
+            if (savedProgress && savedProgress.stage === 'quiz') {
+                state.stage = savedProgress.stage;
+                state.currentSetId = savedProgress.currentSetId;
+                state.currentIdx = savedProgress.currentIdx;
+                state.answers = savedProgress.answers;
+            } else if (savedProgress && savedProgress.stage === 'home') {
+                state.stage = 'home';
+                state.currentSetId = savedProgress.currentSetId;
+                state.currentIdx = savedProgress.currentIdx;
+                state.answers = savedProgress.answers;
+            }
+        }
+        initAutoResume();
 
         function saveHistory() {
-            localStorage.setItem('digitalExamHistory_Dark', JSON.stringify(state.history));
+            localStorage.setItem('digitalExamHistory_V2', JSON.stringify(state.history));
+        }
+
+        function saveProgress() {
+            if (state.currentSetId) {
+                localStorage.setItem('digitalExamProgress_V2', JSON.stringify({
+                    stage: state.stage,
+                    currentSetId: state.currentSetId,
+                    currentIdx: state.currentIdx,
+                    answers: state.answers
+                }));
+            }
         }
 
         function render() {
             const app = document.getElementById('app');
-            window.scrollTo(0, 0);
             
             if (state.stage === 'home') app.innerHTML = getHomeHTML();
             else if (state.stage === 'quiz') app.innerHTML = getQuizHTML();
@@ -105,26 +188,69 @@
 
         // --- Controllers ---
         window.startExam = (setId) => {
+            const savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V2'));
+            // เช็คว่ามีข้อสอบทำค้างอยู่ชุดเดียวกับที่กำลังจะเริ่มใหม่หรือไม่
+            if (savedProgress && savedProgress.currentSetId === setId && savedProgress.answers.some(a => a !== null && a !== '')) {
+                if(!confirm("คุณมีข้อสอบชุดนี้ที่ทำค้างไว้ ต้องการเริ่มทำใหม่ทั้งหมดหรือไม่?\n(กด Cancel เพื่อทำต่อจากจุดเดิม)")) {
+                    window.resumeExam();
+                    return;
+                }
+            }
+
             state.stage = 'quiz';
             state.currentSetId = setId;
             state.currentIdx = 0;
             state.answers = Array(50).fill(null);
+            submitConfirmState = false;
+            saveProgress(); // ล้างความจำเดิมและเริ่มใหม่
+            window.scrollTo(0, 0);
             render();
         };
+
+        window.resumeExam = () => {
+            const savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V2'));
+            if (savedProgress) {
+                state.stage = 'quiz';
+                state.currentSetId = savedProgress.currentSetId;
+                state.currentIdx = savedProgress.currentIdx;
+                state.answers = savedProgress.answers;
+                submitConfirmState = false;
+                saveProgress();
+                window.scrollTo(0, 0);
+                render();
+            }
+        }
 
         window.jumpToQuestion = (idx) => {
             state.currentIdx = idx;
+            submitConfirmState = false;
+            saveProgress();
             render();
         };
 
+        // สำหรับเลือกตอบ (MCQ)
         window.selectOption = (optionIndex) => {
             state.answers[state.currentIdx] = optionIndex;
+            saveProgress();
+            render();
+        };
+
+        // สำหรับรับค่าพิมพ์เติมคำและวิธีทำ
+        window.handleInputAnswer = (val) => {
+            state.answers[state.currentIdx] = val;
+            saveProgress(); // บันทึกอัตโนมัติขณะพิมพ์
+        };
+
+        // เมื่อพิมพ์เสร็จแล้วเสียบโฟกัส ให้เรนเดอร์เพื่ออัปเดตสีแผงปุ่มด้านขวา
+        window.handleInputBlur = () => {
             render();
         };
 
         window.nextQuestion = () => {
             if (state.currentIdx < 49) {
                 state.currentIdx++;
+                submitConfirmState = false;
+                saveProgress();
                 render();
             }
         };
@@ -132,38 +258,61 @@
         window.prevQuestion = () => {
             if (state.currentIdx > 0) {
                 state.currentIdx--;
+                submitConfirmState = false;
+                saveProgress();
                 render();
             }
         };
 
+        // ระบบยืนยันการส่ง 2 ครั้ง
         window.submitExam = () => {
-            if(confirm("คุณต้องการส่งคำตอบและดูผลคะแนนใช่หรือไม่?")) {
-                const analysis = calculateAnalysis(state.answers, examSets[state.currentSetId].data);
-                
-                const historyRecord = {
-                    id: Date.now(),
-                    setId: state.currentSetId,
-                    setName: examSets[state.currentSetId].title,
-                    date: new Date().toLocaleString('th-TH'),
-                    score: analysis.score,
-                    total: 50,
-                    answers: [...state.answers],
-                    analysisData: analysis
-                };
-                
-                state.history.unshift(historyRecord);
-                saveHistory();
-
-                state.viewingHistoryItem = historyRecord;
-                state.stage = 'results';
+            if (!submitConfirmState) {
+                submitConfirmState = true;
                 render();
+                // รีเซ็ตสถานะปุ่มกลับหากไม่กดยืนยันภายใน 4 วินาที
+                setTimeout(() => { 
+                    if(submitConfirmState) { submitConfirmState = false; render(); }
+                }, 4000);
+                return;
             }
+            
+            submitConfirmState = false;
+            const analysis = calculateAnalysis(state.answers, examSets[state.currentSetId].data);
+            
+            const historyRecord = {
+                id: Date.now(),
+                setId: state.currentSetId,
+                setName: examSets[state.currentSetId].title,
+                date: new Date().toLocaleString('th-TH'),
+                score: analysis.mcqScore,
+                totalMCQ: 30,
+                answers: [...state.answers],
+                analysisData: analysis
+            };
+            
+            state.history.unshift(historyRecord);
+            saveHistory();
+
+            // ล้าง Progress ที่ทำค้างไว้เพราะส่งคำตอบแล้ว
+            localStorage.removeItem('digitalExamProgress_V2');
+
+            state.viewingHistoryItem = historyRecord;
+            state.stage = 'results';
+            window.scrollTo(0, 0);
+            render();
         };
 
         window.goHome = () => {
             state.stage = 'home';
-            state.currentSetId = null;
             state.viewingHistoryItem = null;
+            submitConfirmState = false;
+            
+            // อัปเดต state ลงใน localstorage ว่าพักกลับมาอยู่หน้า home จะได้ไม่เด้งเข้าข้อสอบอัตโนมัติ
+            if (state.currentSetId) {
+                saveProgress(); 
+            }
+
+            window.scrollTo(0, 0);
             render();
         };
 
@@ -172,32 +321,37 @@
             if (record) {
                 state.viewingHistoryItem = record;
                 state.stage = 'results';
+                window.scrollTo(0, 0);
                 render();
             }
         };
 
-        window.clearHistory = () => {
-            if(confirm("คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการสอบทั้งหมด?")) {
+        window.clearHistoryDirect = () => {
+            if(confirm("ลบประวัติการสอบที่ตรวจแล้วทั้งหมดใช่หรือไม่?")) {
                 state.history = [];
                 saveHistory();
                 render();
             }
-        };
+        }
 
+        // --- วิเคราะห์ผล (คำนวณเฉพาะส่วนที่ 1 MCQ) ---
         function calculateAnalysis(userAnswers, questionsData) {
-            let score = 0;
+            let mcqScore = 0;
             const chapters = {};
 
             userAnswers.forEach((ans, idx) => {
                 const q = questionsData[idx];
-                if (!chapters[q.chapter]) {
-                    chapters[q.chapter] = { total: 0, correct: 0 };
-                }
-                chapters[q.chapter].total += 1;
                 
-                if (ans === q.correctAnswer) {
-                    score += 1;
-                    chapters[q.chapter].correct += 1;
+                if (q.type === 'mcq') {
+                    if (!chapters[q.chapter]) {
+                        chapters[q.chapter] = { total: 0, correct: 0 };
+                    }
+                    chapters[q.chapter].total += 1;
+                    
+                    if (ans === q.correctAnswer) {
+                        mcqScore += 1;
+                        chapters[q.chapter].correct += 1;
+                    }
                 }
             });
 
@@ -213,7 +367,7 @@
                 }
             });
 
-            return { score, needReview, good };
+            return { mcqScore, needReview, good };
         }
 
         // --- Views ---
@@ -228,7 +382,7 @@
             } else {
                 historyHTML = '<div class="space-y-4">';
                 state.history.forEach(h => {
-                    const passClass = h.score >= 25 
+                    const passClass = h.score >= 15 
                         ? 'text-green-400 bg-green-500/10 border-green-500/30' 
                         : 'text-red-400 bg-red-500/10 border-red-500/30';
                     historyHTML += `
@@ -240,8 +394,9 @@
                                 </div>
                             </div>
                             <div class="flex items-center space-x-4">
-                                <div class="${passClass} px-4 py-2 rounded-lg border font-bold text-lg">
-                                    ${h.score} / 50
+                                <div class="${passClass} px-4 py-2 rounded-lg border font-bold text-center">
+                                    <div class="text-lg">${h.score} / 30</div>
+                                    <div class="text-[10px] opacity-70">คะแนนส่วน MCQ</div>
                                 </div>
                                 <button onclick="viewHistoryDetail(${h.id})" class="p-2 text-indigo-400 hover:bg-indigo-500/20 rounded-lg transition-colors" title="ดูรายละเอียด">
                                     <i data-lucide="chevron-right" class="w-6 h-6"></i>
@@ -253,36 +408,66 @@
                 historyHTML += '</div>';
             }
 
+            // เช็คว่ามีข้อสอบค้างอยู่หรือไม่
+            let savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V2'));
+
             return `
             <div class="min-h-screen pb-12">
-                <div class="bg-indigo-950/80 border-b border-indigo-900/50 pt-16 pb-20 px-6 rounded-b-[3rem] shadow-xl">
+                <div class="bg-indigo-950/80 border-b border-indigo-900/50 pt-16 pb-16 px-6 rounded-b-[3rem] shadow-xl">
                     <div class="max-w-4xl mx-auto text-center">
                         <i data-lucide="brain-circuit" class="w-16 h-16 mx-auto mb-4 text-indigo-400"></i>
                         <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">Digital Systems Exam Portal</h1>
-                        <p class="text-indigo-200/80 text-lg md:text-xl max-w-2xl mx-auto">ระบบจำลองการสอบแบบ 50 ข้อ พร้อมวิเคราะห์จุดแข็ง-จุดอ่อนรายบทเรียน เพื่อเตรียมความพร้อมก่อนลงสนามจริง (Dark Mode)</p>
+                        <div class="text-indigo-200/80 text-lg max-w-3xl mx-auto bg-slate-900/40 p-4 rounded-2xl border border-indigo-500/20 inline-block text-left mt-2 shadow-inner">
+                            <p class="font-bold text-white mb-2 text-center">📋 โครงสร้างข้อสอบ (ให้ทำทุกข้อ)</p>
+                            <ul class="space-y-1 text-sm md:text-base">
+                                <li><i data-lucide="check-circle" class="w-4 h-4 inline text-indigo-400 mr-2"></i> ส่วนที่ 1: แบบเลือกตอบ (MCQ) - จำนวน 30 ข้อ</li>
+                                <li><i data-lucide="edit-2" class="w-4 h-4 inline text-indigo-400 mr-2"></i> ส่วนที่ 2: เติมคำ - จำนวน 10 ข้อ</li>
+                                <li><i data-lucide="align-left" class="w-4 h-4 inline text-indigo-400 mr-2"></i> ส่วนที่ 3: แสดงวิธีทำ - จำนวน 10 ข้อ</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
-                <div class="max-w-4xl mx-auto px-4 -mt-10 space-y-12">
-                    
+                <div class="max-w-4xl mx-auto px-4 mt-8 space-y-12">
                     <section>
                         <div class="flex items-center mb-6">
                             <i data-lucide="play-circle" class="w-6 h-6 text-indigo-400 mr-2"></i>
                             <h2 class="text-2xl font-bold text-white">เลือกชุดข้อสอบ</h2>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${Object.keys(examSets).map(key => `
-                                <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/10 transition-all group">
-                                    <div class="w-12 h-12 bg-indigo-500/20 rounded-full flex items-center justify-center text-indigo-400 font-bold text-xl mb-4 group-hover:scale-110 transition-transform">
+                            ${Object.keys(examSets).map(key => {
+                                const isResumable = savedProgress && savedProgress.currentSetId === key;
+                                
+                                let actionButtons = '';
+                                if (isResumable) {
+                                    actionButtons = `
+                                        <button onclick="resumeExam()" class="w-full py-3 bg-amber-500/20 text-amber-400 font-bold rounded-xl hover:bg-amber-600 hover:text-white transition-colors border border-amber-500/40 shadow-lg shadow-amber-500/10">
+                                            <i data-lucide="play" class="w-4 h-4 inline mr-1"></i> ทำข้อสอบต่อ (Resume)
+                                        </button>
+                                        <button onclick="startExam('${key}')" class="w-full mt-3 py-2 text-sm text-slate-400 hover:text-white transition-colors border border-slate-700 rounded-xl hover:bg-slate-800">
+                                            <i data-lucide="rotate-ccw" class="w-4 h-4 inline mr-1 -mt-0.5"></i> เริ่มทำใหม่ทั้งหมด
+                                        </button>
+                                    `;
+                                } else {
+                                    actionButtons = `
+                                        <button onclick="startExam('${key}')" class="w-full py-3 bg-indigo-500/10 text-indigo-400 font-semibold rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors border border-indigo-500/20">
+                                            เริ่มทำข้อสอบ
+                                        </button>
+                                    `;
+                                }
+
+                                return `
+                                <div class="bg-slate-800 rounded-2xl p-6 border ${isResumable ? 'border-amber-500/30 ring-1 ring-amber-500/20' : 'border-slate-700 hover:border-indigo-500'} hover:shadow-lg hover:shadow-indigo-500/10 transition-all group relative">
+                                    ${isResumable ? '<span class="absolute -top-3 right-4 bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full shadow-md animate-pulse">กำลังทำค้างไว้</span>' : ''}
+                                    <div class="w-12 h-12 ${isResumable ? 'bg-amber-500/20 text-amber-400' : 'bg-indigo-500/20 text-indigo-400'} rounded-full flex items-center justify-center font-bold text-xl mb-4 group-hover:scale-110 transition-transform">
                                         ${key}
                                     </div>
                                     <h3 class="text-xl font-bold text-white mb-2">${examSets[key].title}</h3>
-                                    <p class="text-slate-400 mb-6 flex items-center"><i data-lucide="file-text" class="w-4 h-4 mr-2"></i> จำนวน 50 ข้อ</p>
-                                    <button onclick="startExam('${key}')" class="w-full py-3 bg-indigo-500/10 text-indigo-400 font-semibold rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors border border-indigo-500/20">
-                                        เริ่มทำข้อสอบ
-                                    </button>
+                                    <p class="text-slate-400 mb-6 flex items-center text-sm"><i data-lucide="layers" class="w-4 h-4 mr-2"></i> จำนวน 50 ข้อ (แบ่ง 3 ส่วน)</p>
+                                    ${actionButtons}
                                 </div>
-                            `).join('')}
+                                `
+                            }).join('')}
                         </div>
                     </section>
 
@@ -293,14 +478,13 @@
                                 <h2 class="text-2xl font-bold text-white">ประวัติการสอบของคุณ</h2>
                             </div>
                             ${state.history.length > 0 ? `
-                                <button onclick="clearHistory()" class="text-sm text-red-400 hover:text-red-300 flex items-center px-3 py-1 rounded-lg hover:bg-red-500/10 transition-colors">
+                                <button onclick="clearHistoryDirect()" class="text-sm text-red-400 hover:text-red-300 flex items-center px-3 py-1 rounded-lg hover:bg-red-500/10 transition-colors">
                                     <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i> ล้างประวัติ
                                 </button>
                             ` : ''}
                         </div>
                         ${historyHTML}
                     </section>
-
                 </div>
             </div>
             `;
@@ -309,30 +493,70 @@
         function getQuizHTML() {
             const currentData = examSets[state.currentSetId];
             const q = currentData.data[state.currentIdx];
-            const answeredCount = state.answers.filter(a => a !== null).length;
+            
+            // เช็คจำนวนข้อที่ทำแล้ว
+            let answeredCount = 0;
+            state.answers.forEach((ans, i) => {
+                const type = currentData.data[i].type;
+                if (type === 'mcq' && ans !== null) answeredCount++;
+                if ((type === 'fill' || type === 'essay') && ans && ans.trim() !== '') answeredCount++;
+            });
             const progressPercent = (answeredCount / 50) * 100;
 
-            let optionsHTML = '';
-            q.options.forEach((opt, i) => {
-                const isSelected = state.answers[state.currentIdx] === i;
-                const btnClass = isSelected 
-                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-100 ring-1 ring-indigo-500' 
-                    : 'border-slate-700 bg-slate-800/50 hover:border-indigo-400 hover:bg-slate-700 text-slate-300';
-                const circleClass = isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-slate-600 bg-slate-800';
-                
-                optionsHTML += `
-                    <button onclick="selectOption(${i})" class="w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center ${btnClass}">
-                        <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 shrink-0 transition-colors ${circleClass}">
-                            ${isSelected ? '<div class="w-2 h-2 rounded-full bg-white"></div>' : ''}
-                        </div>
-                        <span class="text-md leading-relaxed">${opt}</span>
-                    </button>
-                `;
-            });
+            // HTML สำหรับช่องรับคำตอบตาม Type
+            let inputSectionHTML = '';
 
+            if (q.type === 'mcq') {
+                let optionsHTML = '';
+                q.options.forEach((opt, i) => {
+                    const isSelected = state.answers[state.currentIdx] === i;
+                    const btnClass = isSelected 
+                        ? 'border-indigo-500 bg-indigo-500/20 text-indigo-100 ring-1 ring-indigo-500' 
+                        : 'border-slate-700 bg-slate-800/50 hover:border-indigo-400 hover:bg-slate-700 text-slate-300';
+                    const circleClass = isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-slate-600 bg-slate-800';
+                    
+                    optionsHTML += `
+                        <button onclick="selectOption(${i})" class="w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center ${btnClass}">
+                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 shrink-0 transition-colors ${circleClass}">
+                                ${isSelected ? '<div class="w-2 h-2 rounded-full bg-white"></div>' : ''}
+                            </div>
+                            <span class="text-md leading-relaxed">${opt}</span>
+                        </button>
+                    `;
+                });
+                inputSectionHTML = `<div class="space-y-3 mt-auto">${optionsHTML}</div>`;
+            } 
+            else if (q.type === 'fill') {
+                let val = state.answers[state.currentIdx] || '';
+                inputSectionHTML = `
+                    <div class="mt-auto pt-8">
+                        <p class="text-sm font-semibold text-indigo-400 mb-3"><i data-lucide="edit-2" class="w-4 h-4 inline mr-1"></i> ส่วนที่ 2: เติมคำตอบสั้นๆ (กรุณาพิมพ์ลงในช่องด้านล่าง)</p>
+                        <input type="text" value="${val}" oninput="handleInputAnswer(this.value)" onblur="handleInputBlur()"
+                            class="w-full bg-slate-800 border border-slate-600 rounded-xl p-4 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all outline-none shadow-inner"
+                            placeholder="พิมพ์คำตอบของคุณที่นี่... (ข้อมูลจะถูกบันทึกอัตโนมัติ)">
+                    </div>
+                `;
+            } 
+            else if (q.type === 'essay') {
+                let val = state.answers[state.currentIdx] || '';
+                inputSectionHTML = `
+                    <div class="mt-auto pt-8 flex-grow flex flex-col">
+                        <p class="text-sm font-semibold text-indigo-400 mb-3"><i data-lucide="align-left" class="w-4 h-4 inline mr-1"></i> ส่วนที่ 3: แสดงวิธีทำ / อธิบายรายละเอียด</p>
+                        <textarea oninput="handleInputAnswer(this.value)" onblur="handleInputBlur()"
+                            class="w-full flex-grow bg-slate-800 border border-slate-600 rounded-xl p-4 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all outline-none resize-none min-h-[200px] shadow-inner"
+                            placeholder="พิมพ์อธิบายวิธีทำหรือคำตอบของคุณอย่างละเอียด... (ข้อมูลจะถูกบันทึกอัตโนมัติ)">${val}</textarea>
+                    </div>
+                `;
+            }
+
+            // HTML สำหรับกล่องนำทางด้านขวา
             let navigatorHTML = '';
             for (let i = 0; i < 50; i++) {
-                const isDone = state.answers[i] !== null;
+                const type = currentData.data[i].type;
+                let isDone = false;
+                if (type === 'mcq') isDone = state.answers[i] !== null;
+                else isDone = state.answers[i] && state.answers[i].trim() !== '';
+
                 const isCurrent = state.currentIdx === i;
                 let btnStyle = 'bg-slate-800 border-slate-700 text-slate-500 hover:bg-slate-700';
                 if (isCurrent) btnStyle = 'ring-2 ring-indigo-500 bg-indigo-500/20 border-indigo-500 text-indigo-200 font-bold';
@@ -345,6 +569,9 @@
                 `;
             }
 
+            const submitBtnText = submitConfirmState ? 'คลิกอีกครั้งเพื่อยืนยันส่ง' : 'ส่งคำตอบทั้งหมด';
+            const submitBtnClass = submitConfirmState ? 'bg-red-600 hover:bg-red-500 border-red-500 shadow-red-500/30' : 'bg-green-600 hover:bg-green-500 border-green-500 shadow-green-500/30';
+
             return `
             <div class="min-h-screen flex flex-col md:flex-row">
                 
@@ -356,20 +583,21 @@
                         </div>
                         <div class="text-right">
                             <span class="text-sm font-semibold text-slate-300">ทำแล้ว ${answeredCount}/50 ข้อ</span>
-                            <div class="bg-slate-700 rounded-full h-2 w-32 mt-2 overflow-hidden">
-                                <div class="bg-indigo-500 h-2 rounded-full transition-all duration-300" style="width: ${progressPercent}%"></div>
+                            <div class="bg-slate-700 rounded-full h-2 w-32 mt-2 overflow-hidden shadow-inner">
+                                <div class="bg-amber-500 h-2 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(245,158,11,0.6)]" style="width: ${progressPercent}%"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 md:p-10 flex-grow flex flex-col shadow-lg shadow-black/20">
-                        <div class="flex items-start mb-8">
+                    <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 md:p-10 flex-grow flex flex-col shadow-lg shadow-black/20 relative">
+                        <div class="absolute top-4 right-6 text-xs text-slate-500 flex items-center">
+                            <i data-lucide="cloud-lightning" class="w-3 h-3 mr-1 text-green-500"></i> บันทึกอัตโนมัติแล้ว
+                        </div>
+                        <div class="flex items-start mb-6 mt-4 md:mt-0">
                             <span class="text-4xl font-black text-slate-700 mr-4 mt-1 leading-none">${state.currentIdx + 1}.</span>
                             <h3 class="text-xl md:text-2xl font-medium leading-relaxed text-white">${q.question}</h3>
                         </div>
-                        <div class="space-y-3 mt-auto">
-                            ${optionsHTML}
-                        </div>
+                        ${inputSectionHTML}
                     </div>
 
                     <div class="mt-6 flex justify-between items-center">
@@ -378,8 +606,8 @@
                         </button>
                         
                         ${state.currentIdx === 49 ? `
-                            <button onclick="submitExam()" class="px-8 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-500 transition-all flex items-center border border-green-500">
-                                <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i> ส่งคำตอบทั้งหมด
+                            <button onclick="submitExam()" class="px-6 md:px-8 py-3 text-white rounded-xl font-bold transition-all flex items-center border shadow-lg ${submitBtnClass}">
+                                <i data-lucide="${submitConfirmState ? 'alert-triangle' : 'check-circle'}" class="w-5 h-5 mr-2"></i> ${submitBtnText}
                             </button>
                         ` : `
                             <button onclick="nextQuestion()" class="px-6 py-3 rounded-xl font-medium flex items-center transition-colors bg-indigo-600 text-white hover:bg-indigo-500">
@@ -392,11 +620,24 @@
                 <div class="w-full md:w-80 bg-slate-800 border-l border-slate-700 p-6 hidden md:block overflow-y-auto">
                     <div class="sticky top-0 bg-slate-800 pb-4 z-10 border-b border-slate-700 mb-4 flex justify-between items-center">
                         <h3 class="font-bold text-white">แผงนำทางข้อสอบ</h3>
-                        <button onclick="goHome()" class="text-sm text-slate-400 hover:text-red-400 transition-colors">ออกจากการสอบ</button>
+                        <button onclick="goHome()" class="text-sm text-slate-400 hover:text-red-400 transition-colors">ออก</button>
                     </div>
+                    
+                    <p class="text-xs text-slate-500 mb-2">ส่วนที่ 1: เลือกตอบ (ข้อ 1-30)</p>
+                    <div class="grid grid-cols-5 gap-2 mb-4">
+                        ${navigatorHTML.match(/<button[\s\S]*?<\/button>/g).slice(0, 30).join('')}
+                    </div>
+
+                    <p class="text-xs text-slate-500 mb-2">ส่วนที่ 2: เติมคำ (ข้อ 31-40)</p>
+                    <div class="grid grid-cols-5 gap-2 mb-4">
+                        ${navigatorHTML.match(/<button[\s\S]*?<\/button>/g).slice(30, 40).join('')}
+                    </div>
+
+                    <p class="text-xs text-slate-500 mb-2">ส่วนที่ 3: วิธีทำ (ข้อ 41-50)</p>
                     <div class="grid grid-cols-5 gap-2">
-                        ${navigatorHTML}
+                        ${navigatorHTML.match(/<button[\s\S]*?<\/button>/g).slice(40, 50).join('')}
                     </div>
+
                     <div class="mt-8 pt-4 border-t border-slate-700">
                         <div class="flex items-center text-xs text-slate-400 mb-2">
                             <div class="w-3 h-3 bg-slate-800 border border-slate-600 rounded mr-2"></div> ยังไม่ได้ทำ
@@ -425,8 +666,8 @@
             const questionsData = examSets[record.setId].data;
             const analysis = record.analysisData;
             
-            const isPass = analysis.score >= 25;
-            const message = isPass ? '🎉 ยินดีด้วย! คุณผ่านเกณฑ์การทดสอบ' : '📚 ต้องพยายามอีกนิด กลับไปทบทวนเนื้อหานะครับ';
+            const isPass = analysis.mcqScore >= 15; // อิงเกณฑ์ครึ่งหนึ่งของ 30 ข้อ
+            const message = isPass ? '🎉 ยินดีด้วย! คุณผ่านเกณฑ์ส่วนของช้อยส์' : '📚 ส่วนตัวเลือกยังไม่ผ่านเกณฑ์ ทบทวนเพิ่มนะครับ';
             const colorTheme = isPass ? 'indigo' : 'red';
 
             let needReviewHTML = analysis.needReview.length > 0 
@@ -435,7 +676,7 @@
                         <span>${item.chapter}</span>
                         <span class="font-mono text-xs bg-red-500/20 px-2 py-1 rounded">ถูก ${item.correct}/${item.total}</span>
                     </li>`).join('') + '</ul>'
-                : '<p class="text-sm text-green-400 italic">ยอดเยี่ยม! คุณผ่านเกณฑ์ทุกหัวข้อ</p>';
+                : '<p class="text-sm text-green-400 italic">ยอดเยี่ยม! คุณตอบถูกในส่วนเลือกตอบทั้งหมด</p>';
 
             let goodHTML = analysis.good.length > 0
                 ? '<ul class="space-y-3">' + analysis.good.map(item => `
@@ -448,26 +689,35 @@
             let detailsHTML = '';
             questionsData.forEach((q, idx) => {
                 const userAns = record.answers[idx];
-                const isCorrect = userAns === q.correctAnswer;
-                const isSkipped = userAns === null;
-                
-                const borderClass = isCorrect ? 'border-green-500/30 bg-green-500/10' : (isSkipped ? 'border-amber-500/30 bg-amber-500/10' : 'border-red-500/30 bg-red-500/10');
-                const iconHTML = isCorrect 
-                    ? '<i data-lucide="check-circle-2" class="w-6 h-6 text-green-400 shrink-0"></i>' 
-                    : (isSkipped ? '<i data-lucide="minus-circle" class="w-6 h-6 text-amber-400 shrink-0"></i>' : '<i data-lucide="x-circle" class="w-6 h-6 text-red-400 shrink-0"></i>');
+                let isSkipped, isCorrect, borderClass, iconHTML, userAnswerText, answerLabel;
 
-                let userAnswerText = isSkipped ? '<span class="text-amber-500 font-medium">ไม่ได้ตอบ</span>' 
-                                               : `<span class="${isCorrect ? 'text-green-400' : 'text-red-400'} line-through">${q.options[userAns]}</span>`;
+                if (q.type === 'mcq') {
+                    isSkipped = userAns === null;
+                    isCorrect = userAns === q.correctAnswer;
+                    borderClass = isCorrect ? 'border-green-500/30 bg-green-500/10' : (isSkipped ? 'border-amber-500/30 bg-amber-500/10' : 'border-red-500/30 bg-red-500/10');
+                    iconHTML = isCorrect ? '<i data-lucide="check-circle-2" class="w-6 h-6 text-green-400 shrink-0"></i>' : (isSkipped ? '<i data-lucide="minus-circle" class="w-6 h-6 text-amber-400 shrink-0"></i>' : '<i data-lucide="x-circle" class="w-6 h-6 text-red-400 shrink-0"></i>');
+                    userAnswerText = isSkipped ? '<span class="text-amber-500 font-medium">ไม่ได้ตอบ</span>' : `<span class="${isCorrect ? 'text-green-400' : 'text-red-400'} line-through">${q.options[userAns]}</span>`;
+                    answerLabel = q.options[q.correctAnswer];
+                } else {
+                    isSkipped = !userAns || userAns.trim() === '';
+                    isCorrect = false; // สำหรับส่วนเขียนตอบ จะไม่ตีความว่าถูก/ผิด ให้เป็นสถานะรอตรวจ
+                    borderClass = isSkipped ? 'border-amber-500/30 bg-amber-500/10' : 'border-indigo-500/30 bg-indigo-500/10';
+                    iconHTML = isSkipped ? '<i data-lucide="minus-circle" class="w-6 h-6 text-amber-400 shrink-0"></i>' : '<i data-lucide="clock" class="w-6 h-6 text-indigo-400 shrink-0"></i>';
+                    userAnswerText = isSkipped ? '<span class="text-amber-500 font-medium">ไม่ได้ตอบ</span>' : `<span class="text-indigo-300 break-words whitespace-pre-wrap">"${userAns}"</span>`;
+                    answerLabel = q.correctAnswer;
+                }
+
+                const waitReviewBadge = (q.type !== 'mcq' && !isSkipped) ? '<span class="text-xs ml-2 bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30 font-medium">รอผู้สอนตรวจ</span>' : '';
 
                 detailsHTML += `
                     <div class="p-5 rounded-xl border ${borderClass}">
                         <div class="flex items-start gap-3">
                             ${iconHTML}
-                            <div class="flex-grow">
+                            <div class="flex-grow w-full overflow-hidden">
                                 <h4 class="font-medium text-slate-200 leading-snug">ข้อ ${idx + 1}. ${q.question}</h4>
                                 <div class="mt-3 space-y-2 text-sm">
-                                    ${!isCorrect ? `<p class="text-slate-400">คำตอบของคุณ: ${userAnswerText}</p>` : ''}
-                                    <p class="text-green-400 font-medium">เฉลย: ${q.options[q.correctAnswer]}</p>
+                                    <div class="text-slate-400">คำตอบของคุณ: ${userAnswerText} ${waitReviewBadge}</div>
+                                    <p class="text-green-400 font-medium">${q.type === 'mcq' ? 'เฉลย:' : 'แนวคำตอบ:'} ${answerLabel}</p>
                                     <div class="mt-3 p-3 bg-slate-900/50 rounded-lg border border-slate-700 text-slate-400 text-sm">
                                         <i data-lucide="info" class="w-4 h-4 inline-block mr-1 -mt-0.5 opacity-50"></i>
                                         ${q.explanation}
@@ -492,18 +742,21 @@
                         <h2 class="text-3xl font-bold mb-1 text-white">ผลการทดสอบ</h2>
                         <p class="text-slate-400 mb-6">${record.setName} • ส่งเมื่อ ${record.date}</p>
                         
-                        <div class="inline-flex flex-col items-center justify-center w-40 h-40 rounded-full border-8 border-${colorTheme}-500/20 mb-6 relative">
-                            <span class="text-5xl font-black text-${colorTheme}-400">${analysis.score}</span>
-                            <span class="text-lg text-slate-500 font-medium border-t border-slate-700 w-16 pt-1 mt-1">50</span>
+                        <div class="inline-flex flex-col items-center justify-center w-40 h-40 rounded-full border-8 border-${colorTheme}-500/20 mb-3 relative shadow-inner">
+                            <span class="text-5xl font-black text-${colorTheme}-400">${analysis.mcqScore}</span>
+                            <span class="text-lg text-slate-500 font-medium border-t border-slate-700 w-16 pt-1 mt-1">30</span>
                         </div>
-                        <p class="text-xl font-bold text-slate-300">${message}</p>
+                        <p class="text-xl font-bold text-slate-300 mb-2">${message}</p>
+                        <p class="text-sm text-indigo-400 bg-indigo-500/10 py-1.5 px-4 rounded-full inline-block border border-indigo-500/20">
+                            * ส่วนอัตนัย (เติมคำ/วิธีทำ) อีก 20 ข้อ รอผู้สอนตรวจให้คะแนน
+                        </p>
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="bg-red-500/10 rounded-2xl p-6 border border-red-500/20">
                             <div class="flex items-center mb-4 pb-4 border-b border-red-500/20">
                                 <i data-lucide="target" class="w-6 h-6 text-red-400 mr-2"></i>
-                                <h3 class="text-lg font-bold text-red-400">จุดที่ต้องเน้นทบทวน</h3>
+                                <h3 class="text-lg font-bold text-red-400">จุดที่ต้องเน้นทบทวน (จากช้อยส์)</h3>
                             </div>
                             ${needReviewHTML}
                         </div>
@@ -521,7 +774,7 @@
                         <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-700">
                             <h3 class="text-xl font-bold text-white flex items-center">
                                 <i data-lucide="file-check-2" class="w-6 h-6 text-indigo-400 mr-2"></i>
-                                เฉลยละเอียดทั้งหมด 50 ข้อ
+                                เฉลยและแนวคำตอบทั้งหมด 50 ข้อ
                             </h3>
                         </div>
                         <div class="space-y-4">
