@@ -12,9 +12,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #0f172a; /* slate-900 */
+            background-color: #0f172a;
         }
-        /* ซ่อน Scrollbar สำหรับแผงนำทางข้อสอบ */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -29,124 +28,133 @@
     <div id="app"></div>
 
     <script>
-        // --- ส่วนที่ 1: ข้อมูลฐานคำถามแบบเลือกตอบ (MCQ) ---
-        const baseQuestions = [
-            { chapter: "ระบบตัวเลข", question: "สัญญาณดิจิทัลมีกี่สถานะ?", options: ["1 สถานะ", "2 สถานะ", "3 สถานะ", "ไม่จำกัด"], correctAnswer: 1, explanation: "สัญญาณดิจิทัลมี 2 สถานะ คือ 0 (Low) และ 1 (High)" },
-            { chapter: "รหัสไบนารี่ (Week 11)", question: "รหัส BCD-8421 ของเลข 7 คือข้อใด?", options: ["0110", "1000", "0111", "1001"], correctAnswer: 2, explanation: "เลข 7 ในระบบฐานสิบ แปลงเป็นเลขฐานสองแบบ BCD-8421 ใช้ 4 บิต คือ 0111" },
-            { chapter: "รหัสไบนารี่ (Week 11)", question: "เลขฐานสิบ 47 เมื่อแปลงเป็น BCD-8421 ได้ผลลัพธ์คือข้อใด?", options: ["0100 0111", "0100 1000", "101111", "0111 0100"], correctAnswer: 0, explanation: "4 แปลงเป็น 0100 และ 7 แปลงเป็น 0111 นำมาต่อกัน" },
-            { chapter: "รหัสไบนารี่ (Week 11)", question: "รหัส Excess-3 ของเลข 5 คือข้อใด?", options: ["0101", "1000", "0111", "1010"], correctAnswer: 1, explanation: "Excess-3 คือการนำเลขฐานสิบมาบวก 3 (5+3=8) แล้วแปลงเป็นฐานสอง 4 บิต (1000)" },
-            { chapter: "คณิตศาสตร์ลอจิก (Week 11)", question: "การแปลงเลขทศนิยมฐานสิบ 0.625 เป็นเลขฐานสอง มีค่าตรงกับข้อใด?", options: ["0.101", "0.110", "0.011", "0.111"], correctAnswer: 0, explanation: "0.625 × 2 = 1.250 (1), 0.250 × 2 = 0.500 (0), 0.500 × 2 = 1.000 (1) -> 0.101" },
-            { chapter: "ลอจิกเกต (Week 12)", question: "ตัวแปรลอจิก (Logic Variable) มีลักษณะตามข้อใด?", options: ["มีสถานะต่อเนื่อง", "อยู่พร้อมกันได้ 2 สถานะ", "มีได้เพียง 2 สถานะ และเป็นพร้อมกันไม่ได้", "มีค่าเป็น 1 เสมอ"], correctAnswer: 2, explanation: "เป็น Bi-State Variable (เปิด-ปิด, 0-1) เป็นพร้อมกันไม่ได้" },
-            { chapter: "วงจรคอมบิเนชั่นฯ (Week 13)", question: "ข้อใดกล่าวถูกต้องเกี่ยวกับวงจรคอมบิเนชั่น?", options: ["มีหน่วยความจำ", "ขึ้นอยู่กับอินพุตปัจจุบันและสภาวะก่อนหน้า", "ต้องมี Clock", "เอาต์พุตขึ้นอยู่กับอินพุตปัจจุบันเท่านั้น"], correctAnswer: 3, explanation: "วงจรคอมบิเนชั่นไม่มีการป้อนกลับและไม่มีหน่วยความจำ" },
-            { chapter: "วงจรคอมบิเนชั่นฯ (Week 13)", question: "การต่อ LED 7-segment แบบมัลติเพล็กซ์ มีลักษณะอย่างไร?", options: ["1 วงจรถอดรหัส ต่อ 1 หลัก", "ต่อขา a-g เข้าด้วยกัน ใช้ขา Common สลับการทำงาน", "ไม่ใช้ตัวต้านทาน", "ไฟติดพร้อมกันทั้งหมดเสมอ"], correctAnswer: 1, explanation: "แชร์พอร์ต a-g และใช้ขา Common กวาดสลับติดทีละหลักอย่างรวดเร็ว" },
-            { chapter: "วงจรฟลิปฟลอป (Week 16)", question: "ฟลิปฟลอป ทำหน้าที่หลักอะไร?", options: ["แปลงอนาล็อกเป็นดิจิทัล", "กรองความถี่", "หน่วยความจำ 1 บิต", "เพิ่มแรงดัน"], correctAnswer: 2, explanation: "เป็นอุปกรณ์ Bistable ใช้เก็บสถานะ 0 หรือ 1 เสมือนหน่วยความจำ 1 บิต" },
-            { chapter: "วงจรฟลิปฟลอป (Week 16)", question: "ใน JK Flip-Flop หาก J=1, K=1 เมื่อมี Clock เอาต์พุตจะเป็นอย่างไร?", options: ["เป็น 1 เสมอ", "เป็น 0 เสมอ", "คงค่าเดิม", "สลับสถานะจากเดิม (Toggle)"], correctAnswer: 3, explanation: "สภาวะ Toggle จะกลับสถานะจาก 0 เป็น 1 หรือ 1 เป็น 0" },
-            { chapter: "วงจรนับ (Week 16)", question: "หลักการทำงานและการประยุกต์ใช้งานหลักของวงจรนับ (Counter Circuit) คือข้อใด?", options: ["เก็บข้อมูลทีละบิตแล้วเลื่อนออก เพื่อแปลงสัญญาณอนุกรมเป็นขนาน", "ทำงานประสานกันเพื่อนับจำนวนพัลส์ของสัญญาณนาฬิกา นิยมใช้สร้างนาฬิกาดิจิทัลและตัวแบ่งความถี่", "ประมวลผลอินพุตและส่งผลลัพธ์ออกทันทีโดยไม่มีการจดจำค่าเดิม", "เพิ่มระดับความแรงของสัญญาณดิจิทัลเพื่อส่งในระยะไกล"], correctAnswer: 1, explanation: "วงจรนับทำงานโดยการนับจำนวนสัญญาณพัลส์ (Pulse) หรือสัญญาณนาฬิกาที่เข้ามา จึงถูกนำไปประยุกต์ใช้ในการจับเวลา สร้างนาฬิกาดิจิทัล และเป็นวงจรแบ่งความถี่ (Frequency Divider)" },
+        // ==========================================
+        // POOL 1: ระดับมาตรฐาน (Standard Difficulty)
+        // ==========================================
+        const standardMcq = [
+            { chapter: "รหัสไบนารี่ (Week 11)", question: "รหัส BCD-8421 ของเลข 7 คือข้อใด?", options: ["0110", "1000", "0111", "1001"], correctAnswer: 2, explanation: "เลข 7 ในระบบฐานสิบ แปลงเป็น BCD-8421 ใช้ 4 บิต คือ 0111" },
+            { chapter: "รหัสไบนารี่ (Week 11)", question: "รหัส Excess-3 ของเลข 5 คือข้อใด?", options: ["0101", "1000", "0111", "1010"], correctAnswer: 1, explanation: "Excess-3 คือการนำ 5 ไปบวก 3 เป็น 8 แล้วแปลงเป็นฐานสอง (1000)" },
+            { chapter: "ลอจิกเกต (Week 12)", question: "ตัวแปรลอจิกมีลักษณะตามข้อใด?", options: ["มีสถานะต่อเนื่อง", "อยู่พร้อมกันได้ 2 สถานะ", "มีได้เพียง 2 สถานะ และเป็นพร้อมกันไม่ได้", "มีค่าเป็น 1 เสมอ"], correctAnswer: 2, explanation: "เป็น Bi-State Variable (เปิด-ปิด, 0-1) เป็นพร้อมกันไม่ได้" },
+            { chapter: "วงจรคอมบิเนชั่นฯ (Week 13)", question: "ข้อใดกล่าวถูกต้องเกี่ยวกับวงจรคอมบิเนชั่น?", options: ["มีหน่วยความจำ", "เอาต์พุตขึ้นอยู่กับอินพุตปัจจุบันและสภาวะก่อนหน้า", "ต้องมี Clock", "เอาต์พุตขึ้นอยู่กับอินพุตปัจจุบันเท่านั้น"], correctAnswer: 3, explanation: "วงจรคอมบิเนชั่นไม่มีหน่วยความจำและไม่มีการป้อนกลับ" },
+            { chapter: "วงจรคอมบิเนชั่นฯ (Week 13)", question: "การต่อ LED 7-segment แบบมัลติเพล็กซ์ มีลักษณะอย่างไร?", options: ["1 วงจรถอดรหัส ต่อ 1 หลัก", "แชร์ขา a-g เข้าด้วยกัน ใช้ขา Common สลับการทำงานทีละหลัก", "ไฟติดพร้อมกันทั้งหมดตลอดเวลา", "ต่อแบบอนุกรมทั้งหมด"], correctAnswer: 1, explanation: "มัลติเพล็กซ์เป็นการลดสายสัญญาณโดยแชร์พอร์ต a-g และใช้ขาสแกน (Common)" },
+            { chapter: "วงจรฟลิปฟลอป (Week 16)", question: "ฟลิปฟลอป ทำหน้าที่หลักอะไร?", options: ["แปลงอนาล็อกเป็นดิจิทัล", "เพิ่มแรงดัน", "เก็บข้อมูลขนาด 1 บิต", "คำนวณบูลีน"], correctAnswer: 2, explanation: "เป็นอุปกรณ์ Bistable ใช้เก็บสถานะ 0 หรือ 1 เสมือนหน่วยความจำ 1 บิต" },
             { chapter: "วงจรเลื่อนข้อมูล (Week 17)", question: "วงจรเลื่อนข้อมูลแบบ PIPO คืออะไร?", options: ["เข้าทีละบิต ออกทีละบิต", "เข้าทีละบิต ออกพร้อมกัน", "เข้าพร้อมกัน ออกทีละบิต", "เข้าพร้อมกัน ออกพร้อมกัน"], correctAnswer: 3, explanation: "PIPO = Parallel In - Parallel Out" },
-            { chapter: "วงจร Sequential (Week 17)", question: "ความแตกต่างสำคัญที่ทำให้ วงจร Sequential ต่างจาก วงจร Combinational?", options: ["ทำงานแบบ Asynchronous", "เอาต์พุตขึ้นอยู่กับอินพุตปัจจุบันและเอาต์พุตเดิม", "ใช้แค่ Logic Gate พื้นฐาน", "เอาต์พุตเร็วกว่า"], correctAnswer: 1, explanation: "Sequential มีหน่วยความจำ (Feedback) บันทึกสภาวะก่อนหน้า" },
-            { chapter: "วงจรนับ (Week 16)", question: "วงจรนับแบบใดที่สัญญาณนาฬิกาเข้าที่ฟลิปฟลอปตัวแรกเท่านั้น?", options: ["Synchronous Counter", "Asynchronous (Ripple) Counter", "Ring Counter", "Johnson Counter"], correctAnswer: 1, explanation: "Ripple Counter จะส่งผ่านสัญญาณนาฬิกาต่อๆ กันไป (ไม่ได้เข้าทุกตัวพร้อมกัน)" },
-            { chapter: "รหัสต่าง ๆ (Week 11)", question: "ข้อใดเป็นคุณสมบัติเด่นของ Gray Code?", options: ["ใช้บิตน้อยที่สุด", "รหัสบิตถัดไปเปลี่ยนแปลงเพียงครั้งละ 1 บิต", "คำนวณทางคณิตศาสตร์ได้ง่าย", "เป็นรหัสที่มีการถ่วงน้ำหนัก"], correctAnswer: 1, explanation: "คุณสมบัติสำคัญของ Gray Code คือเมื่อค่าเปลี่ยน 1 สเตป บิตจะเปลี่ยนสถานะเพียงบิตเดียวเท่านั้น เพื่อลดข้อผิดพลาด" }
+            { chapter: "วงจรนับ (Week 16)", question: "วงจรนับถูกต่อยอดจากอุปกรณ์พื้นฐานใด?", options: ["Encoder", "Decoder", "Flip-Flop", "Multiplexer"], correctAnswer: 2, explanation: "วงจรนับเป็น Sequential Circuit ที่ใช้ Flip-Flop เรียงต่อกันเพื่อนับพัลส์" }
         ];
 
-        // --- ส่วนที่ 2: ข้อมูลฐานคำถามเติมคำ (Fill-in-the-blank) ---
-        const fillBaseQuestions = [
-            { chapter: "วงจรคอมบิเนชั่นฯ", question: "วงจรคอมบิเนชั่นไม่มีการป้อนกลับสัญญาณ และไม่มี __________ เพื่อเก็บข้อมูลสภาวะก่อนหน้า", answer: "หน่วยความจำ" },
-            { chapter: "วงจรฟลิปฟลอป", question: "ฟลิปฟลอปแบบ JK เมื่อมีการป้อนลอจิก J=1, K=1 จะเกิดสภาวะที่เรียกว่า __________", answer: "Toggle (สลับสถานะ)" },
-            { chapter: "ลอจิกเกต", question: "ตัวแปรลอจิกมีลักษณะเป็น __________ Variable คือมีสภาวะได้เพียง 2 สถานะเท่านั้น", answer: "Bi-State" },
-            { chapter: "รหัสไบนารี่", question: "รหัสที่มีการเปลี่ยนแปลงบิตเพียง 1 บิตในทุกๆ การเปลี่ยนลำดับค่าที่ติดกัน คือรหัส __________", answer: "Gray Code" },
-            { chapter: "วงจร Sequential", question: "อุปกรณ์ที่ทำหน้าที่เป็นหน่วยความจำขนาด 1 บิต และเป็นพื้นฐานของวงจร Sequential ทั้งหมดคือ __________", answer: "Flip-Flop (ฟลิปฟลอป)" },
-            { chapter: "วงจรเลื่อนข้อมูล", question: "วงจรเลื่อนข้อมูลแบบรับข้อมูลเข้าพร้อมกัน และออกพร้อมกันทั้งหมด มีชื่อย่อภาษาอังกฤษ 4 ตัวอักษรคือ __________", answer: "PIPO" },
-            { chapter: "รหัสไบนารี่", question: "รหัสตัวเลข BCD ย่อมาจากคำเต็มว่า __________", answer: "Binary Coded Decimal" },
-            { chapter: "วงจรนับ", question: "__________ คือวงจรตรรกะแบบลำดับที่ใช้ Flip-Flop ทำหน้าที่นับจำนวนสัญญาณพัลส์ (Pulse)", answer: "วงจรนับ (Counter)" },
-            { chapter: "วงจรคอมบิเนชั่นฯ", question: "การนำ LED 7-segment มาต่อกันหลายหลัก โดยใช้ขา Common ร่วมกันและสลับกวาดการทำงานอย่างรวดเร็ว เรียกว่าหลักการ __________", answer: "มัลติเพล็กซ์ (Multiplex)" },
-            { chapter: "รหัสต่าง ๆ", question: "รหัส ASCII แบบมาตรฐานเพื่อใช้เก็บตัวอักษรและสัญลักษณ์ มีขนาดข้อมูล __________ บิตต่อหนึ่งอักขระ", answer: "7" }
+        const standardFill = [
+            { chapter: "วงจรฟลิปฟลอป", question: "ฟลิปฟลอปแบบ JK เมื่อป้อนลอจิก J=1, K=1 จะเกิดสภาวะที่เรียกว่า __________", answer: "Toggle (สลับสถานะ)" },
+            { chapter: "รหัสไบนารี่", question: "รหัสที่มีการเปลี่ยนแปลงบิตเพียง 1 บิตในทุกๆ การเปลี่ยนลำดับค่าที่ติดกันคือรหัส __________", answer: "Gray Code" },
+            { chapter: "วงจร Sequential", question: "วงจรที่สัญญาณเอาต์พุตขึ้นอยู่กับทั้งอินพุตปัจจุบันและสภาวะก่อนหน้าเรียกว่าวงจร __________", answer: "Sequential (ซีเควนเชียล)" },
+            { chapter: "ลอจิกเกต", question: "ลอจิกเกตที่จะให้เอาต์พุตเป็น 1 ก็ต่อเมื่ออินพุตทั้งหมดเป็น 1 คือเกตชนิดใด __________", answer: "AND Gate" }
         ];
 
-        // --- ส่วนที่ 3: ข้อมูลฐานคำถามวิธีทำ/อธิบาย (Essay) ---
-        const essayBaseQuestions = [
-            { chapter: "วงจร Sequential", question: "จงอธิบายความแตกต่างหลักระหว่าง วงจร Combinational และ วงจร Sequential มาพอสังเขป", answer: "วงจร Combinational เอาต์พุตขึ้นอยู่กับอินพุตปัจจุบันเท่านั้น ไม่มีหน่วยความจำ แต่วงจร Sequential เอาต์พุตจะขึ้นอยู่กับทั้งอินพุตปัจจุบันและสถานะก่อนหน้า (มีหน่วยความจำ/Feedback)" },
-            { chapter: "วงจรเลื่อนข้อมูล", question: "ให้อธิบายหลักการทำงานและประโยชน์ของการนำ Shift Register (วงจรเลื่อนข้อมูล) ไปประยุกต์ใช้งาน", answer: "ใช้แปลงข้อมูลอนุกรมเป็นขนาน (SIPO) หรือข้อมูลขนานเป็นอนุกรม (PISO) สำหรับการสื่อสาร ใช้จัดเก็บข้อมูลชั่วคราว รวมถึงการทำวงจรหน่วงเวลา (Delay)" },
-            { chapter: "วงจรนับ", question: "จงยกตัวอย่างการประยุกต์ใช้งานวงจรนับ (Counter Circuit) ในชีวิตประจำวันหรือในระบบดิจิทัล มาอย่างน้อย 2 ตัวอย่าง", answer: "1. นาฬิกาดิจิทัล/นาฬิกาจับเวลา สำหรับนับวินาที นาที 2. วงจรแบ่งความถี่ (Frequency Divider) ในไมโครคอนโทรลเลอร์" },
-            { chapter: "วงจรฟลิปฟลอป", question: "จงอธิบายสภาวะการทำงานของ JK Flip-Flop เมื่อป้อนอินพุต (J=0, K=0) และ (J=1, K=1)", answer: "เมื่อ J=0, K=0 จะเกิดสภาวะ No Change (คงค่าเดิมไม่เปลี่ยนแปลง) และเมื่อ J=1, K=1 จะเกิดสภาวะ Toggle (สลับสถานะไปมาระหว่าง 0 กับ 1 เมื่อมีสัญญาณนาฬิกามากระตุ้น)" },
-            { chapter: "รหัสต่าง ๆ", question: "อธิบายเหตุผลสำคัญที่ต้องนำรหัส Gray Code มาประยุกต์ใช้ในระบบดิจิทัล แทนการใช้รหัสฐานสองปกติ", answer: "เพราะ Gray Code มีการเปลี่ยนแปลงลอจิกเพียง 1 บิตเสมอในแต่ละลำดับค่าที่เปลี่ยนไป ทำให้สามารถลดปัญหา Glitch หรือการประมวลผลผิดพลาดในจังหวะรอยต่อของการเปลี่ยนข้อมูลได้ดี" },
-            { chapter: "วงจรเลื่อนข้อมูล", question: "จงเปรียบเทียบข้อแตกต่างระหว่างวงจรเลื่อนข้อมูลแบบ SISO (Serial-In Serial-Out) และ PIPO (Parallel-In Parallel-Out)", answer: "SISO รับข้อมูลเข้าทีละบิตและส่งออกทีละบิต ต้องใช้สัญญาณนาฬิกาเท่าจำนวนบิต ทำให้ช้ากว่า PIPO ที่สามารถรับข้อมูลทุกบิตพร้อมกันและส่งออกได้ทันทีใน 1 สัญญาณนาฬิกา" },
-            { chapter: "ระบบตัวเลข", question: "อธิบายขั้นตอนในการแปลงเลขทศนิยมฐานสิบ (ตัวอย่างเช่น 0.625) ให้กลายเป็นเลขฐานสอง", answer: "นำส่วนทศนิยมมาคูณด้วย 2 ไปเรื่อยๆ แล้วนำค่าจำนวนเต็มที่ได้จากผลคูณในแต่ละรอบ (0 หรือ 1) มาเรียงจากบนลงล่าง เขียนออกมาเป็นทศนิยมฐานสอง" },
-            { chapter: "ระบบตัวเลข", question: "เหตุใดสัญญาณดิจิทัลจึงได้รับความนิยมและนำมาใช้ประมวลผลในคอมพิวเตอร์ปัจจุบันมากกว่าสัญญาณอนาล็อก?", answer: "เพราะสัญญาณดิจิทัลมีเพียง 2 สถานะ (0, 1) ทำให้มีความทนทานต่อสัญญาณรบกวน (Noise) ได้สูงกว่า จัดเก็บหรือคัดลอกได้โดยไม่เสียคุณภาพ และสร้างวงจรตรรกะสำหรับประมวลผลได้ง่ายกว่า" },
-            { chapter: "วงจรคอมบิเนชั่นฯ", question: "การต่อใช้งาน LED 7-Segment แบบ Common Anode และ Common Cathode มีความแตกต่างกันอย่างไร?", answer: "แบบ Common Anode (แอโนดร่วม) ต้องป้อนลอจิก 0 (Low) ที่ขาสัญญาณเพื่อให้หลอด LED ติดสว่าง ส่วนแบบ Common Cathode (แคโทดร่วม) ต้องป้อนลอจิก 1 (High) เพื่อให้หลอด LED ติดสว่าง" },
-            { chapter: "ลอจิกเกต", question: "จงอธิบายความหมายของคำว่า Bi-State Variable (ตัวแปรสองสถานะ) ในทฤษฎีลอจิก", answer: "คือตัวแปรที่สามารถมีสภาวะความเป็นไปได้เพียง 2 สถานะเท่านั้น เช่น 0 หรือ 1, เปิด หรือ ปิด, จริง หรือ เท็จ และมีข้อจำกัดคือไม่สามารถเป็นทั้งสองสถานะพร้อมกันในเวลาเดียวกันได้" }
+        const standardEssay = [
+            { chapter: "วงจร Sequential", question: "อธิบายความแตกต่างหลักระหว่างวงจร Combinational และ วงจร Sequential", answer: "Combinational เอาต์พุตขึ้นอยู่กับอินพุตปัจจุบันเท่านั้น ไม่มีหน่วยความจำ ส่วน Sequential เอาต์พุตขึ้นอยู่กับอินพุตและสภาวะก่อนหน้า (มีหน่วยความจำ)" },
+            { chapter: "วงจรเลื่อนข้อมูล", question: "จงยกตัวอย่างประโยชน์ของการประยุกต์ใช้วงจรเลื่อนข้อมูล (Shift Register)", answer: "ใช้จัดเก็บข้อมูลชั่วคราว, ใช้แปลงข้อมูลอนุกรมเป็นขนานสำหรับการสื่อสาร (UART), ใช้หน่วงเวลาสัญญาณ" }
         ];
 
-        // --- สร้างชุดข้อสอบ 50 ข้อ แบ่ง 3 ส่วน ---
-        function generateExamSet(setName, prefixId) {
+        // ==========================================
+        // POOL 2: ระดับประยุกต์สูง (Advanced/Hard Difficulty)
+        // ==========================================
+        const hardMcq = [
+            { chapter: "วงจรฟลิปฟลอป (Week 16)", question: "การต่อ JK Flip-Flop แบบ Master-Slave ช่วยแก้ปัญหาข้อใดในระบบลอจิก?", options: ["ปัญหาการคูณสัญญาณเกินความจำเป็น", "ปัญหา Race-Around Condition เมื่อเกิดพัลส์กว้างกว่าเวลาหน่วง (Delay)", "ปัญหาข้อจำกัดด้านพลังงาน", "แก้ปัญหา Toggle ไม่ยอมกลับสถานะ"], correctAnswer: 1, explanation: "Master-Slave อาศัยการจดจำค่าที่ขอบขาขึ้น (Master) และออกผลที่ขอบขาลง (Slave) ช่วยขจัดปัญหา Race-Around ที่เอาต์พุตแกว่งไปมาเมื่อ J=1,K=1" },
+            { chapter: "วงจรนับ (Week 16)", question: "ในวงจร Asynchronous Mod-10 (Decade Counter) หากต้องการให้เคลียร์ค่ากลับไปที่ 0 เมื่อนับถึง 10 จะต้องดึงพอร์ตใดของฟลิปฟลอปมาเข้าเกต NAND แล้วต่อเข้าพอร์ต CLR?", options: ["Q0 และ Q1", "Q1 และ Q3", "Q2 และ Q3", "Q0, Q1, Q2, Q3 ทุกพอร์ต"], correctAnswer: 1, explanation: "ค่า 10 ในฐานสองคือ 1010 (Q3=1, Q2=0, Q1=1, Q0=0) จึงต้องดึง Q3 และ Q1 มาเข้าเกต NAND เพื่อสั่ง Clear เมื่อนับถึง 10" },
+            { chapter: "วงจรนับ (Week 16)", question: "ข้อเสียเปรียบสำคัญของ Asynchronous (Ripple) Counter เมื่อเทียบกับ Synchronous Counter คืออะไร?", options: ["กินพลังงานสูงกว่ามาก", "มี Propagation Delay (ความหน่วงเวลา) สะสม ทำให้เกิด Glitch ในเอาต์พุตได้ง่าย", "ออกแบบและต่อวงจรยากกว่าหลายเท่า", "ไม่สามารถนับลง (Down Counter) ได้"], correctAnswer: 1, explanation: "Ripple counter สัญญาณ Clock ต่อเรียงกันไปเรื่อยๆ ทำให้ฟลิปฟลอปตัวหลังๆ ต้องรอการทำงานจากตัวแรก เกิด Delay สะสม" },
+            { chapter: "วงจรเลื่อนข้อมูล (Week 17)", question: "วงจรนับแบบใด ที่นำ Shift Register มาเชื่อมพอร์ตเอาต์พุตตัวสุดท้าย (Q) ป้อนกลับเข้าพอร์ตอินพุตตัวแรก (D) โดยมีการสลับค่า (Invert) ก่อนป้อนกลับ?", options: ["Ring Counter", "Johnson Counter", "Ripple Counter", "Decade Counter"], correctAnswer: 1, explanation: "Johnson Counter (หรือ Twisted-Ring) คือการนำเอาต์พุต Q' หรือ invert ของบิตสุดท้าย ป้อนกลับเข้า D ของบิตแรก" },
+            { chapter: "วงจรคอมบิเนชั่นฯ (Week 13)", question: "Multiplexer (MUX) ขนาด 8-to-1 สามารถใช้เพื่อสังเคราะห์สมการลอจิก (Boolean Realization) ขนาดสูงสุดกี่ตัวแปรโดยไม่ต้องต่อลอจิกเกตภายนอกเพิ่ม?", options: ["2 ตัวแปร", "3 ตัวแปร", "4 ตัวแปร", "8 ตัวแปร"], correctAnswer: 1, explanation: "MUX 8-to-1 มี Selector 3 เส้น จึงสามารถแทนความจริงตาราง (Truth table) ของ 3 ตัวแปรได้โดยตรง" },
+            { chapter: "คณิตศาสตร์ลอจิก (Week 11)", question: "เมื่อบวกเลข 8 บิต 2's complement สองจำนวนเข้าด้วยกัน จะเกิดสภาวะ Overflow (ตัวล้น) เมื่อใด?", options: ["เมื่อบวกเลขบวกกับเลขลบแล้วได้ค่าเป็นศูนย์", "เมื่อมีตัวทด (Carry out) ออกจากบิต MSB (บิตซ้ายสุด)", "เมื่อบวกเลขเครื่องหมายเดียวกัน แต่ผลลัพธ์กลับได้เครื่องหมายตรงกันข้าม", "เกิดขึ้นทุกครั้งที่มีการทดเข้าบิตที่ 7"], correctAnswer: 2, explanation: "Overflow ใน 2's complement เกิดเมื่อ (+ บวก + ได้ -) หรือ (- บวก - ได้ +) ซึ่งหมายถึงผลลัพธ์เกินขอบเขตจำนวนบิตที่รองรับ" },
+            { chapter: "คณิตศาสตร์ลอจิก (Week 11)", question: "การนำ Data ขนาด 4 บิตมา X-OR กับบิต 1111 ทั้งหมด จะได้ผลลัพธ์เทียบเท่ากับการกระทำใด?", options: ["หา 2's Complement", "หา 1's Complement (Invert)", "ล้างค่าข้อมูลให้เป็น 0000", "ไม่มีการเปลี่ยนแปลง (Buffer)"], correctAnswer: 1, explanation: "หลักการ X-OR กับ 1 จะเป็นการกลับสถานะลอจิก (Invert) หรือการทำ 1's Complement นั่นเอง" },
+            { chapter: "วงจรคอมบิเนชั่นฯ (Week 13)", question: "หากออกแบบวงจรถอดรหัส (Decoder) 3-to-8 โดยเปิดใช้งานขา Enable=0 วงจรจะมีเอาต์พุตที่พอร์ตใดทำงาน (Active High)?", options: ["พอร์ต Y0 ถึง Y7 ทุกพอร์ตเป็น 1 หมด", "พอร์ต Y0 เป็น 1 พอร์ตเดียว", "ไม่ทำงานเลย เอาต์พุตเป็น 0 ทุกพอร์ต", "พอร์ต Y7 เป็น 1 พอร์ตเดียว"], correctAnswer: 2, explanation: "เมื่อขา Enable ถูกปิดการทำงาน (Disable) วงจรถอดรหัสจะไม่ทำหน้าที่ เอาต์พุตจึงเคลียร์เป็นสภาวะ Inactive หมด" }
+        ];
+
+        const hardFill = [
+            { chapter: "วงจรนับ", question: "วงจรนับแบบ Synchronous Counter ขจัดปัญหาความล่าช้าสะสม (Delay) ได้โดยการป้อนสัญญาณ __________ ให้กับฟลิปฟลอปทุกตัวพร้อมกัน", answer: "นาฬิกา (Clock / CLK)" },
+            { chapter: "วงจรเลื่อนข้อมูล", question: "วงจร Shift Register ที่ป้อนเอาต์พุตตัวสุดท้ายกลับเข้าสู่อินพุตตัวแรก (Q -> D) โดยตรง จะทำงานเป็นวงจรนับที่เรียกว่า __________", answer: "Ring Counter" },
+            { chapter: "วงจรฟลิปฟลอป", question: "ตารางแสดงการเปลี่ยนสถานะจาก $Q_{n}$ ไปยัง $Q_{n+1}$ เพื่อหาว่าต้องป้อนอินพุตอะไรให้กับฟลิปฟลอป เรียกว่าตาราง __________", answer: "การกระตุ้น (Excitation Table)" },
+            { chapter: "วงจรคอมบิเนชั่นฯ", question: "วงจรที่ทำหน้าที่คัดเลือกสัญญาณดิจิทัลจากหลายๆ อินพุต ให้ออกไปยังเอาต์พุตเพียงเส้นเดียว คือวงจร __________", answer: "มัลติเพล็กเซอร์ (Multiplexer / MUX)" }
+        ];
+
+        const hardEssay = [
+            { chapter: "วงจรนับ", question: "ในการออกแบบวงจร Synchronous Counter ที่นับเลขแบบไม่เรียงลำดับ (เช่น 0 -> 2 -> 5 -> 7 -> 0) ท่านต้องอาศัยตารางใดบ้าง และมีขั้นตอนการออกแบบทางทฤษฎีโดยสังเขปอย่างไร?", answer: "1. เขียน State Diagram 2. สร้าง State Table 3. ใช้ Excitation Table ของฟลิปฟลอป (เช่น JK) เพื่อหาอินพุต 4. ใช้ K-map ลดรูปสมการเพื่อนำไปวาดวงจรเกต" },
+            { chapter: "วงจรเลื่อนข้อมูล", question: "อธิบายความแตกต่างของ Ring Counter และ Johnson Counter ทั้งในโครงสร้างของวงจรและจำนวนสถานะ (States) ที่เกิดขึ้น (สมมติใช้ 4 Flip-flops)", answer: "โครงสร้าง: Ring Counter นำเอาต์พุต Q ตัวสุดท้ายป้อนกลับเข้า D ตัวแรก ส่วน Johnson นำ Q' (invert) ป้อนกลับ | สถานะ: 4-bit Ring มี 4 สถานะ แต่ 4-bit Johnson จะเกิดสถานะบิดเกลียวรวมเป็น 2N = 8 สถานะ" },
+            { chapter: "คณิตศาสตร์ลอจิก", question: "จงอธิบายปัญหา Propagation Delay (ความหน่วงเวลา) ที่พบในวงจร Ripple Carry Adder และแนวทางการแก้ไขปัญหานี้ในการออกแบบวงจรจริง", answer: "Ripple Adder ต้องรอตัวทด (Carry) วิ่งผ่านทีละบิต ทำให้บิตท้ายสุดออกช้าเมื่อบิตมีจำนวนมาก แก้โดยใช้วงจร Carry Look-Ahead Adder ที่คำนวณตัวทดล่วงหน้าด้วยสมการลอจิกคู่ขนาน" }
+        ];
+
+        // --- ฟังก์ชันสร้างข้อสอบแบบสุ่มตามระดับความยาก ---
+        function generateExamSet(setName, prefixId, difficulty) {
             let exam = [];
-            
-            // ส่วนที่ 1: แบบเลือกตอบ (MCQ) - 30 ข้อ
-            const shuffledBase = [...baseQuestions].sort(() => Math.random() - 0.5);
+            const mcqPool = difficulty === 'hard' ? hardMcq : standardMcq;
+            const fillPool = difficulty === 'hard' ? hardFill : standardFill;
+            const essayPool = difficulty === 'hard' ? hardEssay : standardEssay;
+
+            // ส่วนที่ 1: แบบเลือกตอบ (MCQ) - 30 ข้อ (ผสมแบบวนลูปและเปลี่ยนประโยคเพื่อการจำลอง)
+            let shuffledMCQ = [...mcqPool].sort(() => Math.random() - 0.5);
             for (let i = 0; i < 30; i++) {
-                const baseRef = shuffledBase[i % shuffledBase.length];
+                const base = shuffledMCQ[i % shuffledMCQ.length];
                 exam.push({
                     id: `${prefixId}-MCQ-${i+1}`,
                     type: 'mcq',
-                    chapter: baseRef.chapter,
-                    question: `[ส่วนที่ 1: เลือกตอบ] ${baseRef.question}`,
-                    options: baseRef.options,
-                    correctAnswer: baseRef.correctAnswer,
-                    explanation: baseRef.explanation
+                    chapter: base.chapter,
+                    question: i < shuffledMCQ.length ? `[ส่วนที่ 1: เลือกตอบ] ${base.question}` : `[ข้อสอบจำลองประยุกต์] ${base.question}`,
+                    options: base.options,
+                    correctAnswer: base.correctAnswer,
+                    explanation: base.explanation
                 });
             }
 
-            // ส่วนที่ 2: เติมคำ (Fill-in-the-blank) - 10 ข้อ
-            const shuffledFill = [...fillBaseQuestions].sort(() => Math.random() - 0.5);
+            // ส่วนที่ 2: เติมคำ - 10 ข้อ
+            let shuffledFill = [...fillPool].sort(() => Math.random() - 0.5);
             for (let i = 0; i < 10; i++) {
+                const base = shuffledFill[i % shuffledFill.length];
                 exam.push({
                     id: `${prefixId}-FILL-${i+1}`,
                     type: 'fill',
-                    chapter: shuffledFill[i].chapter,
-                    question: `[ส่วนที่ 2: เติมคำ] ข้อที่ ${i+1} ${shuffledFill[i].question}`,
-                    correctAnswer: shuffledFill[i].answer,
-                    explanation: "คีย์เวิร์ดสำคัญ: " + shuffledFill[i].answer
+                    chapter: base.chapter,
+                    question: `[ส่วนที่ 2: เติมคำ] ${base.question}`,
+                    correctAnswer: base.answer,
+                    explanation: "คีย์เวิร์ดสำคัญ: " + base.answer
                 });
             }
 
-            // ส่วนที่ 3: แสดงวิธีทำ (Essay/Show Work) - 10 ข้อ
-            const shuffledEssay = [...essayBaseQuestions].sort(() => Math.random() - 0.5);
+            // ส่วนที่ 3: วิธีทำ - 10 ข้อ
+            let shuffledEssay = [...essayPool].sort(() => Math.random() - 0.5);
             for (let i = 0; i < 10; i++) {
+                const base = shuffledEssay[i % shuffledEssay.length];
                 exam.push({
                     id: `${prefixId}-ESSAY-${i+1}`,
                     type: 'essay',
-                    chapter: shuffledEssay[i].chapter,
-                    question: `[ส่วนที่ 3: แสดงวิธีทำ] ข้อที่ ${i+1} ${shuffledEssay[i].question}`,
-                    correctAnswer: shuffledEssay[i].answer,
-                    explanation: "การตรวจคำตอบส่วนนี้ ผู้สอนจะพิจารณาจากความเข้าใจและการอธิบายที่ถูกต้องตามหลักทฤษฎี"
+                    chapter: base.chapter,
+                    question: `[ส่วนที่ 3: อธิบาย] ${base.question}`,
+                    correctAnswer: base.answer,
+                    explanation: "ผู้สอนประเมินจากหลักทฤษฎี (ไกด์ไลน์: " + base.answer + ")"
                 });
             }
 
             return exam;
         }
 
-        // โหลดข้อมูล 5 ชุด
+        // จัดทำข้อมูลเพียง 4 ชุดตามรีเควสต์
         const examSets = {
-            'A': { title: 'ชุดที่ 1 (SET A)', data: generateExamSet('ชุดที่ 1 (SET A)', 'A') },
-            'B': { title: 'ชุดที่ 2 (SET B)', data: generateExamSet('ชุดที่ 2 (SET B)', 'B') },
-            'C': { title: 'ชุดที่ 3 (SET C)', data: generateExamSet('ชุดที่ 3 (SET C)', 'C') },
-            'D': { title: 'ชุดที่ 4 (SET D)', data: generateExamSet('ชุดที่ 4 (SET D)', 'D') },
-            'E': { title: 'ชุดที่ 5 (SET E)', data: generateExamSet('ชุดที่ 5 (SET E)', 'E') }
+            'SET_1': { title: 'ชุดที่ 1 (ระดับมาตรฐาน)', diffClass: 'text-emerald-400', borderClass: 'border-emerald-500/30', bgClass: 'bg-emerald-500/10', data: generateExamSet('ชุดที่ 1', 'S1', 'standard') },
+            'SET_2': { title: 'ชุดที่ 2 (ระดับมาตรฐาน)', diffClass: 'text-emerald-400', borderClass: 'border-emerald-500/30', bgClass: 'bg-emerald-500/10', data: generateExamSet('ชุดที่ 2', 'S2', 'standard') },
+            'SET_3': { title: 'ชุดที่ 3 (ระดับท้าทาย/ประยุกต์)', diffClass: 'text-purple-400', borderClass: 'border-purple-500/30', bgClass: 'bg-purple-500/10', data: generateExamSet('ชุดที่ 3', 'H1', 'hard') },
+            'SET_4': { title: 'ชุดที่ 4 (ระดับท้าทาย/ประยุกต์)', diffClass: 'text-purple-400', borderClass: 'border-purple-500/30', bgClass: 'bg-purple-500/10', data: generateExamSet('ชุดที่ 4', 'H2', 'hard') }
         };
 
-        // --- State ของแอปพลิเคชัน ---
+        // --- State ---
         let state = {
             stage: 'home',
             currentSetId: null,
             currentIdx: 0,
             answers: [],
-            history: JSON.parse(localStorage.getItem('digitalExamHistory_V2')) || [],
+            history: JSON.parse(localStorage.getItem('digitalExamHistory_V3')) || [],
             viewingHistoryItem: null
         };
         let submitConfirmState = false;
 
-        // --- ระบบ Auto Save (Resume) เมื่อผู้ใช้กด Refresh หน้าจอ ---
         function initAutoResume() {
-            const savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V2'));
+            const savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V3'));
             if (savedProgress && savedProgress.stage === 'quiz') {
                 state.stage = savedProgress.stage;
                 state.currentSetId = savedProgress.currentSetId;
@@ -162,12 +170,12 @@
         initAutoResume();
 
         function saveHistory() {
-            localStorage.setItem('digitalExamHistory_V2', JSON.stringify(state.history));
+            localStorage.setItem('digitalExamHistory_V3', JSON.stringify(state.history));
         }
 
         function saveProgress() {
             if (state.currentSetId) {
-                localStorage.setItem('digitalExamProgress_V2', JSON.stringify({
+                localStorage.setItem('digitalExamProgress_V3', JSON.stringify({
                     stage: state.stage,
                     currentSetId: state.currentSetId,
                     currentIdx: state.currentIdx,
@@ -178,37 +186,32 @@
 
         function render() {
             const app = document.getElementById('app');
-            
             if (state.stage === 'home') app.innerHTML = getHomeHTML();
             else if (state.stage === 'quiz') app.innerHTML = getQuizHTML();
             else if (state.stage === 'results') app.innerHTML = getResultsHTML();
-
             lucide.createIcons();
         }
 
-        // --- Controllers ---
         window.startExam = (setId) => {
-            const savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V2'));
-            // เช็คว่ามีข้อสอบทำค้างอยู่ชุดเดียวกับที่กำลังจะเริ่มใหม่หรือไม่
+            const savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V3'));
             if (savedProgress && savedProgress.currentSetId === setId && savedProgress.answers.some(a => a !== null && a !== '')) {
                 if(!confirm("คุณมีข้อสอบชุดนี้ที่ทำค้างไว้ ต้องการเริ่มทำใหม่ทั้งหมดหรือไม่?\n(กด Cancel เพื่อทำต่อจากจุดเดิม)")) {
                     window.resumeExam();
                     return;
                 }
             }
-
             state.stage = 'quiz';
             state.currentSetId = setId;
             state.currentIdx = 0;
             state.answers = Array(50).fill(null);
             submitConfirmState = false;
-            saveProgress(); // ล้างความจำเดิมและเริ่มใหม่
+            saveProgress(); 
             window.scrollTo(0, 0);
             render();
         };
 
         window.resumeExam = () => {
-            const savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V2'));
+            const savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V3'));
             if (savedProgress) {
                 state.stage = 'quiz';
                 state.currentSetId = savedProgress.currentSetId;
@@ -228,20 +231,17 @@
             render();
         };
 
-        // สำหรับเลือกตอบ (MCQ)
         window.selectOption = (optionIndex) => {
             state.answers[state.currentIdx] = optionIndex;
             saveProgress();
             render();
         };
 
-        // สำหรับรับค่าพิมพ์เติมคำและวิธีทำ
         window.handleInputAnswer = (val) => {
             state.answers[state.currentIdx] = val;
-            saveProgress(); // บันทึกอัตโนมัติขณะพิมพ์
+            saveProgress(); 
         };
 
-        // เมื่อพิมพ์เสร็จแล้วเสียบโฟกัส ให้เรนเดอร์เพื่ออัปเดตสีแผงปุ่มด้านขวา
         window.handleInputBlur = () => {
             render();
         };
@@ -264,12 +264,10 @@
             }
         };
 
-        // ระบบยืนยันการส่ง 2 ครั้ง
         window.submitExam = () => {
             if (!submitConfirmState) {
                 submitConfirmState = true;
                 render();
-                // รีเซ็ตสถานะปุ่มกลับหากไม่กดยืนยันภายใน 4 วินาที
                 setTimeout(() => { 
                     if(submitConfirmState) { submitConfirmState = false; render(); }
                 }, 4000);
@@ -292,9 +290,7 @@
             
             state.history.unshift(historyRecord);
             saveHistory();
-
-            // ล้าง Progress ที่ทำค้างไว้เพราะส่งคำตอบแล้ว
-            localStorage.removeItem('digitalExamProgress_V2');
+            localStorage.removeItem('digitalExamProgress_V3');
 
             state.viewingHistoryItem = historyRecord;
             state.stage = 'results';
@@ -306,12 +302,7 @@
             state.stage = 'home';
             state.viewingHistoryItem = null;
             submitConfirmState = false;
-            
-            // อัปเดต state ลงใน localstorage ว่าพักกลับมาอยู่หน้า home จะได้ไม่เด้งเข้าข้อสอบอัตโนมัติ
-            if (state.currentSetId) {
-                saveProgress(); 
-            }
-
+            if (state.currentSetId) saveProgress(); 
             window.scrollTo(0, 0);
             render();
         };
@@ -334,20 +325,17 @@
             }
         }
 
-        // --- วิเคราะห์ผล (คำนวณเฉพาะส่วนที่ 1 MCQ) ---
         function calculateAnalysis(userAnswers, questionsData) {
             let mcqScore = 0;
             const chapters = {};
 
             userAnswers.forEach((ans, idx) => {
                 const q = questionsData[idx];
-                
                 if (q.type === 'mcq') {
                     if (!chapters[q.chapter]) {
                         chapters[q.chapter] = { total: 0, correct: 0 };
                     }
                     chapters[q.chapter].total += 1;
-                    
                     if (ans === q.correctAnswer) {
                         mcqScore += 1;
                         chapters[q.chapter].correct += 1;
@@ -394,9 +382,9 @@
                                 </div>
                             </div>
                             <div class="flex items-center space-x-4">
-                                <div class="${passClass} px-4 py-2 rounded-lg border font-bold text-center">
+                                <div class="${passClass} px-4 py-2 rounded-lg border font-bold text-center min-w-[80px]">
                                     <div class="text-lg">${h.score} / 30</div>
-                                    <div class="text-[10px] opacity-70">คะแนนส่วน MCQ</div>
+                                    <div class="text-[10px] opacity-70 mt-[-2px]">ส่วน MCQ</div>
                                 </div>
                                 <button onclick="viewHistoryDetail(${h.id})" class="p-2 text-indigo-400 hover:bg-indigo-500/20 rounded-lg transition-colors" title="ดูรายละเอียด">
                                     <i data-lucide="chevron-right" class="w-6 h-6"></i>
@@ -408,8 +396,7 @@
                 historyHTML += '</div>';
             }
 
-            // เช็คว่ามีข้อสอบค้างอยู่หรือไม่
-            let savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V2'));
+            let savedProgress = JSON.parse(localStorage.getItem('digitalExamProgress_V3'));
 
             return `
             <div class="min-h-screen pb-12">
@@ -432,10 +419,11 @@
                     <section>
                         <div class="flex items-center mb-6">
                             <i data-lucide="play-circle" class="w-6 h-6 text-indigo-400 mr-2"></i>
-                            <h2 class="text-2xl font-bold text-white">เลือกชุดข้อสอบ</h2>
+                            <h2 class="text-2xl font-bold text-white">เลือกชุดข้อสอบ (ทั้งหมด 4 ชุด)</h2>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             ${Object.keys(examSets).map(key => {
+                                const set = examSets[key];
                                 const isResumable = savedProgress && savedProgress.currentSetId === key;
                                 
                                 let actionButtons = '';
@@ -450,19 +438,24 @@
                                     `;
                                 } else {
                                     actionButtons = `
-                                        <button onclick="startExam('${key}')" class="w-full py-3 bg-indigo-500/10 text-indigo-400 font-semibold rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors border border-indigo-500/20">
+                                        <button onclick="startExam('${key}')" class="w-full py-3 bg-indigo-500/10 text-indigo-400 font-semibold rounded-xl hover:bg-indigo-600 hover:text-white transition-colors border border-indigo-500/20 shadow-md">
                                             เริ่มทำข้อสอบ
                                         </button>
                                     `;
                                 }
 
                                 return `
-                                <div class="bg-slate-800 rounded-2xl p-6 border ${isResumable ? 'border-amber-500/30 ring-1 ring-amber-500/20' : 'border-slate-700 hover:border-indigo-500'} hover:shadow-lg hover:shadow-indigo-500/10 transition-all group relative">
+                                <div class="bg-slate-800 rounded-2xl p-6 border ${isResumable ? 'border-amber-500/30 ring-1 ring-amber-500/20' : 'border-slate-700 hover:border-indigo-500'} hover:shadow-lg hover:shadow-indigo-500/10 transition-all relative">
                                     ${isResumable ? '<span class="absolute -top-3 right-4 bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full shadow-md animate-pulse">กำลังทำค้างไว้</span>' : ''}
-                                    <div class="w-12 h-12 ${isResumable ? 'bg-amber-500/20 text-amber-400' : 'bg-indigo-500/20 text-indigo-400'} rounded-full flex items-center justify-center font-bold text-xl mb-4 group-hover:scale-110 transition-transform">
-                                        ${key}
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="w-12 h-12 ${set.bgClass} ${set.diffClass} rounded-full flex items-center justify-center font-bold text-xl border ${set.borderClass}">
+                                            ${key.split('_')[1]}
+                                        </div>
+                                        <div class="text-xs font-medium px-3 py-1 rounded-full ${set.bgClass} ${set.diffClass} border ${set.borderClass}">
+                                            ${key.includes('1') || key.includes('2') ? 'ระดับมาตรฐาน' : 'ประยุกต์สูง (Hard)'}
+                                        </div>
                                     </div>
-                                    <h3 class="text-xl font-bold text-white mb-2">${examSets[key].title}</h3>
+                                    <h3 class="text-xl font-bold text-white mb-2">${set.title}</h3>
                                     <p class="text-slate-400 mb-6 flex items-center text-sm"><i data-lucide="layers" class="w-4 h-4 mr-2"></i> จำนวน 50 ข้อ (แบ่ง 3 ส่วน)</p>
                                     ${actionButtons}
                                 </div>
@@ -494,7 +487,6 @@
             const currentData = examSets[state.currentSetId];
             const q = currentData.data[state.currentIdx];
             
-            // เช็คจำนวนข้อที่ทำแล้ว
             let answeredCount = 0;
             state.answers.forEach((ans, i) => {
                 const type = currentData.data[i].type;
@@ -503,7 +495,6 @@
             });
             const progressPercent = (answeredCount / 50) * 100;
 
-            // HTML สำหรับช่องรับคำตอบตาม Type
             let inputSectionHTML = '';
 
             if (q.type === 'mcq') {
@@ -533,7 +524,7 @@
                         <p class="text-sm font-semibold text-indigo-400 mb-3"><i data-lucide="edit-2" class="w-4 h-4 inline mr-1"></i> ส่วนที่ 2: เติมคำตอบสั้นๆ (กรุณาพิมพ์ลงในช่องด้านล่าง)</p>
                         <input type="text" value="${val}" oninput="handleInputAnswer(this.value)" onblur="handleInputBlur()"
                             class="w-full bg-slate-800 border border-slate-600 rounded-xl p-4 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all outline-none shadow-inner"
-                            placeholder="พิมพ์คำตอบของคุณที่นี่... (ข้อมูลจะถูกบันทึกอัตโนมัติ)">
+                            placeholder="พิมพ์คำตอบของคุณที่นี่... (ระบบบันทึกอัตโนมัติ)">
                     </div>
                 `;
             } 
@@ -544,12 +535,11 @@
                         <p class="text-sm font-semibold text-indigo-400 mb-3"><i data-lucide="align-left" class="w-4 h-4 inline mr-1"></i> ส่วนที่ 3: แสดงวิธีทำ / อธิบายรายละเอียด</p>
                         <textarea oninput="handleInputAnswer(this.value)" onblur="handleInputBlur()"
                             class="w-full flex-grow bg-slate-800 border border-slate-600 rounded-xl p-4 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all outline-none resize-none min-h-[200px] shadow-inner"
-                            placeholder="พิมพ์อธิบายวิธีทำหรือคำตอบของคุณอย่างละเอียด... (ข้อมูลจะถูกบันทึกอัตโนมัติ)">${val}</textarea>
+                            placeholder="พิมพ์อธิบายวิธีทำหรือแนวคำตอบของคุณอย่างละเอียด... (ระบบบันทึกอัตโนมัติ)">${val}</textarea>
                     </div>
                 `;
             }
 
-            // HTML สำหรับกล่องนำทางด้านขวา
             let navigatorHTML = '';
             for (let i = 0; i < 50; i++) {
                 const type = currentData.data[i].type;
@@ -591,7 +581,7 @@
 
                     <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 md:p-10 flex-grow flex flex-col shadow-lg shadow-black/20 relative">
                         <div class="absolute top-4 right-6 text-xs text-slate-500 flex items-center">
-                            <i data-lucide="cloud-lightning" class="w-3 h-3 mr-1 text-green-500"></i> บันทึกอัตโนมัติแล้ว
+                            <i data-lucide="cloud-lightning" class="w-3 h-3 mr-1 text-green-500"></i> บันทึกอัตโนมัติ
                         </div>
                         <div class="flex items-start mb-6 mt-4 md:mt-0">
                             <span class="text-4xl font-black text-slate-700 mr-4 mt-1 leading-none">${state.currentIdx + 1}.</span>
@@ -666,7 +656,7 @@
             const questionsData = examSets[record.setId].data;
             const analysis = record.analysisData;
             
-            const isPass = analysis.mcqScore >= 15; // อิงเกณฑ์ครึ่งหนึ่งของ 30 ข้อ
+            const isPass = analysis.mcqScore >= 15;
             const message = isPass ? '🎉 ยินดีด้วย! คุณผ่านเกณฑ์ส่วนของช้อยส์' : '📚 ส่วนตัวเลือกยังไม่ผ่านเกณฑ์ ทบทวนเพิ่มนะครับ';
             const colorTheme = isPass ? 'indigo' : 'red';
 
@@ -700,7 +690,7 @@
                     answerLabel = q.options[q.correctAnswer];
                 } else {
                     isSkipped = !userAns || userAns.trim() === '';
-                    isCorrect = false; // สำหรับส่วนเขียนตอบ จะไม่ตีความว่าถูก/ผิด ให้เป็นสถานะรอตรวจ
+                    isCorrect = false; 
                     borderClass = isSkipped ? 'border-amber-500/30 bg-amber-500/10' : 'border-indigo-500/30 bg-indigo-500/10';
                     iconHTML = isSkipped ? '<i data-lucide="minus-circle" class="w-6 h-6 text-amber-400 shrink-0"></i>' : '<i data-lucide="clock" class="w-6 h-6 text-indigo-400 shrink-0"></i>';
                     userAnswerText = isSkipped ? '<span class="text-amber-500 font-medium">ไม่ได้ตอบ</span>' : `<span class="text-indigo-300 break-words whitespace-pre-wrap">"${userAns}"</span>`;
